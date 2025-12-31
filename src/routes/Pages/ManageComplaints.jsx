@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Trash, Search,FilePenLine,Eye } from "lucide-react";
-import Swal from "sweetalert2";
+import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from "../../components/Config";
 import { Link } from "react-router-dom";
 
@@ -83,7 +83,7 @@ console.log(res.data.complaints)
             placeholder="Search complaints..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="px-4 py-2 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+            className="input-soft pl-10"
           />
           <Search
             size={18}
@@ -172,3 +172,5 @@ console.log(res.data.complaints)
 };
 
 export default ManageComplaints;
+
+

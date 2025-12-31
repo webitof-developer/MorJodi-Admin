@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import axios from "axios";
-import Swal from "sweetalert2";
+import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from "../../components/Config";
 
 const EditComplaint = () => {
@@ -142,3 +142,5 @@ const EditComplaint = () => {
 };
 
 export default EditComplaint;
+
+

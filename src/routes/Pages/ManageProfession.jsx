@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Trash, Search, PlusCircle, FilePenLine } from "lucide-react";
-import Swal from "sweetalert2";
+import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from "../../components/Config";
 import { Link } from "react-router-dom";
 
@@ -73,15 +73,13 @@ const ManageProfession = () => {
               placeholder="Search profession"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-4 py-2 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              className="input-soft pl-10"
             />
             <Search className="absolute left-3 top-3 text-gray-500 dark:text-gray-400" size={18} />
           </div>
           <Link
             to="/addprofession"
-            className="border px-4 py-2 rounded-md flex items-center gap-2 
-                        hover:bg-gray-100 dark:hover:bg-gray-700 
-                        text-gray-800 dark:text-white "
+            className="btn-primary flex items-center gap-2"
           >
             <PlusCircle size={18} /> Add Profission
           </Link>
@@ -138,3 +136,5 @@ const ManageProfession = () => {
 };
 
 export default ManageProfession;
+
+

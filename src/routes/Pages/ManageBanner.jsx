@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
 import { PlusCircle, Trash, PencilLine } from "lucide-react";
-import Swal from 'sweetalert2';
+import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from '../../components/Config';
 import { Link } from 'react-router-dom';
 
@@ -77,9 +77,7 @@ const ManageBanner = () => {
         <h2 className="text-lg font-semibold text-gray-900 dark:text-white">All Content</h2>
         <Link
           to="/addbanner"
-          className="border px-4 py-2 rounded-md flex items-center gap-2
-                     hover:bg-gray-100 dark:hover:bg-gray-700
-                     text-gray-800 dark:text-white"
+          className="btn-primary flex items-center gap-2"
         >
           <PlusCircle size={20} className="text-gray-800 dark:text-white" />
           Add Banner
@@ -150,3 +148,5 @@ const ManageBanner = () => {
 };
 
 export default ManageBanner;
+
+

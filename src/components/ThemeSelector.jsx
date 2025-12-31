@@ -1,10 +1,10 @@
-import { useState, useContext, useEffect } from "react";
+import { useContext, useEffect, useState } from "react";
+import { Check, Moon, Settings, Sun, X } from "lucide-react";
+
 import { ThemeProviderContext } from "../contexts/theme-context";
-import { Sun, Moon, Settings, Check } from "lucide-react";
 
 export default function ThemeSelectorSidebar() {
   const { theme, setTheme, color, setColor } = useContext(ThemeProviderContext);
-
   const [isOpen, setIsOpen] = useState(false);
 
   const primaryPalette = [
@@ -22,76 +22,87 @@ export default function ThemeSelectorSidebar() {
     if (savedColor) setColor(savedColor);
   }, []);
 
-  // Persist (optional; provider already persists; harmless duplicate)
-  useEffect(() => {
-    localStorage.setItem("themes", theme);
-    localStorage.setItem("colors", color);
-  }, [theme, color]);
-
   return (
     <>
       <button
+        type="button"
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-5 right-5 p-5 bg-primary text-white rounded-full shadow-lg"
+        className="btn-ghost size-10 rounded-full border border-gray-200 bg-white text-gray-600 shadow-sm transition hover:border-primary/40 hover:text-primary dark:border-gray-700 dark:bg-slate-900 dark:text-gray-300"
+        title="Settings"
+        aria-label="Open settings"
       >
-        <Settings size={25} />
+        <Settings size={20} />
       </button>
 
       {isOpen && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-40" onClick={() => setIsOpen(false)} />
+        <div
+          className="fixed inset-0 z-50 bg-black/40 backdrop-blur-sm"
+          onClick={() => setIsOpen(false)}
+        />
       )}
 
       <div
         id="sidebar"
-        className={`fixed top-0 right-0 w-72 h-full shadow-lg z-50 transition-transform duration-300 ${
+        className={`fixed top-0 right-0 z-50 h-full w-80 transform shadow-2xl transition-transform duration-300 ${
           isOpen ? "translate-x-0" : "translate-x-full"
-        }`}
-        style={{
-          backgroundColor: theme === "dark" ? "#0f1729" : "#ffffff",
-          color: theme === "dark" ? "#ffffff" : "#000000",
-        }}
+        } ${theme === "dark" ? "bg-slate-950 text-white" : "bg-white text-gray-900"}`}
       >
-        <div className="flex justify-between items-center p-4 border-b">
+        <div className="flex items-center justify-between border-b border-gray-200 p-4 dark:border-gray-800">
           <h3 className="text-lg font-semibold">Settings</h3>
-          <button onClick={() => setIsOpen(false)} className="text-gray-500 text-2xl font-bold">
-            &times;
+          <button
+            type="button"
+            onClick={() => setIsOpen(false)}
+            className="btn-ghost size-9 rounded-full hover:text-primary"
+            aria-label="Close settings"
+          >
+            <X size={18} />
           </button>
         </div>
 
-        <div className="p-4">
-          <h4 className="font-semibold mb-2">Theme Option</h4>
-          <div className="flex p-3 gap-4">
-            <button
-              className={`flex items-center gap-2 px-4 py-2 border rounded-md ${theme === "light" ? "bg-gray-200" : ""}`}
-              onClick={() => setTheme("light")}
-            >
-              <Sun size={18} /> Light
-            </button>
-            <button
-              className={`flex items-center gap-2 px-4 py-2 border rounded-md ${theme === "dark" ? "bg-gray-200" : ""}`}
-              onClick={() => setTheme("dark")}
-            >
-              <Moon size={18} /> Dark
-            </button>
-          </div>
-
-          <h4 className="font-semibold mt-4 mb-2">Theme Color</h4>
-          <div className="grid grid-cols-6 gap-3 p-3">
-            {primaryPalette.map((c) => (
+        <div className="flex h-[calc(100%-64px)] flex-col gap-6 overflow-y-auto p-5">
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">Theme Option</p>
+            <div className="flex gap-3">
               <button
-                key={c.value}
-                className="w-8 h-8 rounded-full relative flex items-center justify-center ring-1 ring-black/10"
-                style={{ backgroundColor: c.value }}
-                onClick={() => setColor(c.value)}
-                aria-label={c.label}
-                title={c.label}
+                className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition ${
+                  theme === "light"
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-gray-200 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                }`}
+                onClick={() => setTheme("light")}
               >
-                {color === c.value && <Check size={16} className="text-white absolute" />}
+                <Sun size={18} /> Light
               </button>
-            ))}
+              <button
+                className={`flex items-center gap-2 rounded-xl border px-4 py-2 text-sm font-medium transition ${
+                  theme === "dark"
+                    ? "border-primary bg-primary/10 text-primary"
+                    : "border-gray-200 text-gray-700 dark:border-gray-700 dark:text-gray-200"
+                }`}
+                onClick={() => setTheme("dark")}
+              >
+                <Moon size={18} /> Dark
+              </button>
+            </div>
           </div>
 
-          
+          <div className="space-y-2">
+            <p className="text-sm font-semibold text-gray-600 dark:text-gray-300">Theme Color</p>
+            <div className="grid grid-cols-6 gap-3">
+              {primaryPalette.map((c) => (
+                <button
+                  key={c.value}
+                  className="relative flex h-9 w-9 items-center justify-center rounded-full ring-2 ring-transparent transition hover:ring-primary/60"
+                  style={{ backgroundColor: c.value }}
+                  onClick={() => setColor(c.value)}
+                  aria-label={c.label}
+                  title={c.label}
+                >
+                  {color === c.value && <Check size={16} className="text-white drop-shadow-sm" />}
+                </button>
+              ))}
+            </div>
+          </div>
         </div>
       </div>
     </>

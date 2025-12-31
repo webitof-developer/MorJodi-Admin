@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Eye } from "lucide-react";
-import Swal from "sweetalert2";
+import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from "../../components/Config";
 import { useNavigate } from "react-router-dom";
 
@@ -94,3 +94,5 @@ const DeletionRequests = () => {
 };
 
 export default DeletionRequests;
+
+

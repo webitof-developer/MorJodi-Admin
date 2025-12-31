@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
-import Swal from "sweetalert2";
+import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from "../../components/Config";
 import DatePicker from "react-datepicker";
 import "react-datepicker/dist/react-datepicker.css";
@@ -1021,3 +1021,5 @@ const EditUser = () => {
 };
 
 export default EditUser;
+
+

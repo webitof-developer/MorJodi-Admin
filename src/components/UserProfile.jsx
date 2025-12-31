@@ -3,7 +3,7 @@ import { useNavigate } from "react-router-dom";
 import axios from "axios";
 import ProfileImg from "../../src/assets/user-1.jpg";
 import { FiPower } from "react-icons/fi";
-import Swal from "sweetalert2"; 
+import Swal from "/src/utils/swalTheme"; 
 import API_BASE_URL from './Config'
 export const UserProfile = () => {
   const navigate = useNavigate();

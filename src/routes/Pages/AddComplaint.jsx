@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
-import Swal from 'sweetalert2';
+import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from "../../components/Config";
 
 const AddComplaint = () => {
@@ -83,3 +83,5 @@ const AddComplaint = () => {
 };
 
 export default AddComplaint;
+
+

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import API_BASE_URL from "../../components/Config";
-import Swal from 'sweetalert2';
+import Swal from "/src/utils/swalTheme";
 
 const AddBanner = () => {
   const [title, setTitle] = useState('');
@@ -180,3 +180,5 @@ const AddBanner = () => {
 };
 
 export default AddBanner;
+
+

@@ -15,9 +15,12 @@ import {
   IconRosette,    
   IconUsersGroup, 
   IconUserCircle, 
-   IconPhoto,
-IconBuildingChurch,
- IconZodiacLeo
+  IconPhoto,
+  IconBuildingChurch,
+  IconZodiacLeo,
+  IconClockHour5,
+  IconCrown,
+  IconPalette
 } from "@tabler/icons-react";
 import { FaGift } from "react-icons/fa";
 export const navbarLinks = {
@@ -31,6 +34,16 @@ export const navbarLinks = {
       label: "User Management", 
       icon: IconUser,
       path: "/users",
+    },
+    {
+      label: "Premium Users",
+      icon: IconCrown,
+      path: "/premium-users",
+    },
+    {
+      label: "Expired Users",
+      icon: IconClockHour5,
+      path: "/expired-users",
     },
     {
       label: "Deletion Requests",
@@ -94,6 +107,11 @@ export const navbarLinks = {
       icon: IconSettings,
       path: "/settings",
       subMenu: [
+        {
+          label: "Theme Settings",
+          icon: IconPalette,
+          path: "/theme-settings",
+        },
       {
           label: "Plans Management",  
           icon: IconScale,
@@ -148,6 +166,11 @@ export const navbarLinks = {
           label: "App Share Link Setting",
           icon: IconSettings,
           path: "/app-share-link-setting",
+        },
+        {
+          label: "ID Management",
+          icon: IconSettings,
+          path: "/id-management",
         },
       ],
     },

@@ -1,8 +1,9 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { Trash, Search, PlusCircle, FilePenLine } from "lucide-react";
-import Swal from "sweetalert2";
+import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from "../../components/Config";
+import LoadingState from "../../components/LoadingState";
 import { Link } from "react-router-dom";
 
 const ManageCaste = () => {
@@ -62,30 +63,28 @@ const ManageCaste = () => {
   );
 
   if (loading) {
-    return <div>Loading casts...</div>;
+    return <LoadingState label="Loading casts..." rows={6} />;
   }
 
   return (
     <div className="card">
-      <div className="card-header flex justify-between items-center p-4">
-        <h2 className="text-lg font-semibold dark:text-white">Manage Casts</h2>
-        <div className="flex gap-4 items-center">
-          <div className="relative">
+      <div className="card-header flex flex-col gap-3 p-4 sm:flex-row sm:items-center sm:justify-between">
+        <div>
+          <p className="text-xs font-semibold uppercase tracking-[0.25em] text-primary">Directory</p>
+          <h2 className="text-xl font-semibold text-slate-900 dark:text-white">Manage Casts</h2>
+        </div>
+        <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
+          <div className="search-wrap">
             <input
               type="text"
               placeholder="Search cast"
               value={searchTerm}
               onChange={(e) => setSearchTerm(e.target.value)}
-              className="px-4 py-2 pl-10 border rounded-lg focus:outline-none focus:ring-2 focus:ring-primary dark:bg-gray-800 text-gray-900 dark:text-gray-100"
+              className="input-soft"
             />
-            <Search className="absolute left-3 top-3 text-gray-500 dark:text-gray-400" size={18} />
+            <Search className="absolute left-3 top-3 text-slate-400" size={18} />
           </div>
-          <Link
-            to="/addcaste"
-            className="border px-4 py-2 rounded-md flex items-center gap-2 
-                       hover:bg-gray-100 dark:hover:bg-gray-700 
-                       text-gray-800 dark:text-white "
-          >
+          <Link to="/addcaste" className="btn-primary">
             <PlusCircle size={18} /> Add Cast
           </Link>
         </div>
@@ -98,9 +97,9 @@ const ManageCaste = () => {
               <tr className="table-row">
                 <th className="table-head">#</th>
                 <th className="table-head">Cast Name</th>
-                  <th className="table-head">Category</th>
-                   <th className="table-head">Religion</th>
-                <th className="table-head">Actions</th>
+                <th className="table-head">Category</th>
+                <th className="table-head">Religion</th>
+                <th className="table-head text-right">Actions</th>
               </tr>
             </thead>
             <tbody className="table-body">
@@ -109,27 +108,31 @@ const ManageCaste = () => {
                   <tr key={cast._id} className="table-row">
                     <td className="table-cell">{index + 1}</td>
                     <td className="table-cell">{cast.name}</td>
-                     <td className="table-cell">{cast.category}</td>
-                       <td className="table-cell">{cast.religion.name}</td>
+                    <td className="table-cell">{cast.category}</td>
+                    <td className="table-cell">{cast.religion.name}</td>
                     <td className="table-cell">
-                        <div className="flex items-center gap-x-4">
-                            <Link to={`/edit-caste/${cast._id}`} className="text-blue-500 hover:text-blue-700" title="Edit">
-                                <FilePenLine size={20} />
-                            </Link>
-                            <button
-                                onClick={() => handleDelete(cast._id)}
-                                className="text-red-500 hover:text-red-700"
-                                title="Delete Cast"
-                            >
-                                <Trash size={20} />
-                            </button>
-                        </div>
+                      <div className="flex justify-end gap-2">
+                        <Link
+                          to={`/edit-caste/${cast._id}`}
+                          className="action-icon"
+                          title="Edit"
+                        >
+                          <FilePenLine size={18} />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(cast._id)}
+                          className="action-icon text-red-500 hover:text-red-600 hover:border-red-200"
+                          title="Delete Cast"
+                        >
+                          <Trash size={18} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))
               ) : (
                 <tr className="table-row">
-                  <td colSpan="3" className="table-cell text-center text-gray-500">
+                  <td colSpan="5" className="table-cell text-center text-gray-500">
                     No casts found.
                   </td>
                 </tr>
@@ -143,3 +146,5 @@ const ManageCaste = () => {
 };
 
 export default ManageCaste;
+
+

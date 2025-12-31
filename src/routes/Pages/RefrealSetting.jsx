@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
-import Swal from 'sweetalert2';
+import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from "../../components/Config";
 
 const ReferralSetting = () => {
@@ -106,3 +106,5 @@ const ReferralSetting = () => {
 };
 
 export default ReferralSetting;
+
+

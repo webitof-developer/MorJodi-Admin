@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import axios from "axios";
-import Swal from "sweetalert2";
+import Swal from "/src/utils/swalTheme";
 import { useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../components/Config";
 
@@ -60,3 +60,5 @@ const AddReligion = () => {
 };
 
 export default AddReligion;
+
+

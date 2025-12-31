@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axios from "axios";
 import { useLocation, useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../components/Config";
-import Swal from "sweetalert2";
+import Swal from "/src/utils/swalTheme";
 import  { jwtDecode }  from "jwt-decode"; 
 
 const VerifyOtp = () => {
@@ -57,6 +57,10 @@ const VerifyOtp = () => {
     if (element.nextSibling && element.value !== "") {
       element.nextSibling.focus();
     }
+    const completed = newOtpDigits.join("");
+    if (completed.length === 6 && !completed.includes("") && countdown > 0 && !loading) {
+      handleVerifyOtp(null, newOtpDigits);
+    }
   };
 
   const handleKeyDown = (e, index) => {
@@ -65,11 +69,34 @@ const VerifyOtp = () => {
     }
   };
 
-  // ✅ verify OTP (returns only token)
-  const handleVerifyOtp = async (e) => {
+  const handlePaste = (e) => {
     e.preventDefault();
+    const pasted = e.clipboardData.getData("text").replace(/\D/g, "").slice(0, 6);
+    if (!pasted) return;
+
+    const newOtp = new Array(6).fill("");
+    for (let i = 0; i < pasted.length; i += 1) {
+      newOtp[i] = pasted[i];
+    }
+    setOtpDigits(newOtp);
+
+    // Focus the next available box or stay on the last one when full
+    const nextIndex = Math.min(pasted.length, 5);
+    if (inputRefs.current[nextIndex]) {
+      inputRefs.current[nextIndex].focus();
+    }
+
+    if (pasted.length === 6 && countdown > 0 && !loading) {
+      handleVerifyOtp(null, newOtp);
+    }
+  };
+
+  // ✅ verify OTP (returns only token)
+  const handleVerifyOtp = async (e, digitsOverride) => {
+    if (e) e.preventDefault();
     setLoading(true);
-    const otp = otpDigits.join("");
+    const otpArray = digitsOverride || otpDigits;
+    const otp = otpArray.join("");
 
     try {
       const payload =
@@ -106,8 +133,10 @@ const VerifyOtp = () => {
         title: "Login Successful!",
         text: "Redirecting to dashboard...",
         showConfirmButton: false,
-        timer: 1500,
-      }).then(() => navigate("/dashboard"));
+        timer: 900,
+        timerProgressBar: true,
+      });
+      navigate("/dashboard");
     } catch (err) {
       console.error("OTP Verification Error:", err.response?.data || err);
       Swal.fire({
@@ -134,7 +163,14 @@ const VerifyOtp = () => {
         payload
       );
 
-      Swal.fire("Success", "New OTP sent!", "success");
+      Swal.fire({
+        icon: "success",
+        title: "New OTP sent!",
+        text: "Check your inbox for the fresh code.",
+        showConfirmButton: false,
+        timer: 900,
+        timerProgressBar: true,
+      });
       setOtpExpiresAt(response.data.otpExpires);
       setCanResend(false);
       setOtpDigits(new Array(6).fill(""));
@@ -142,6 +178,7 @@ const VerifyOtp = () => {
     } catch (err) {
       console.error("Resend OTP Error:", err.response?.data || err);
       Swal.fire({
+        ...swalStyles,
         icon: "error",
         title: "Resend Failed!",
         text: err.response?.data?.message || "Could not resend OTP.",
@@ -160,66 +197,110 @@ const VerifyOtp = () => {
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
-        <h2 className="text-xl font-bold text-center text-gray-800 mb-6">
-          Verify OTP
-        </h2>
+    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-slate-950 via-slate-900 to-slate-950 px-4 py-10 flex items-center justify-center">
+      <div className="pointer-events-none absolute -left-24 top-16 h-72 w-72 rounded-full bg-primary opacity-20 blur-3xl animate-float-slow" />
+      <div className="pointer-events-none absolute -right-16 bottom-10 h-64 w-64 rounded-full bg-primary-light opacity-30 blur-3xl animate-float-fast" />
 
-        <form onSubmit={handleVerifyOtp} className="space-y-4">
-          <p className="text-center text-gray-600">
-            OTP sent to {type === "email" ? identifier : `+91 ${identifier}`}
-          </p>
+      <div className="relative mx-auto w-full max-w-5xl">
+        <div className="grid w-full overflow-hidden rounded-3xl border border-white/10 bg-white/10 shadow-2xl backdrop-blur-2xl md:grid-cols-2 animate-rise">
+          <div className="hidden flex-col justify-between bg-gradient-to-br from-primary to-primary-light p-10 text-white md:flex">
+            <div className="flex items-center gap-3">
+              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/30 bg-white/15 animate-pop">
+                <img src="/FavIcon.png" alt="Mor Jodi logo" className="h-full w-full object-contain" />
+              </div>
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-white/70">Mor Jodi</p>
+                <p className="text-xl font-semibold">Secure Access</p>
+              </div>
+            </div>
 
-          <div className="flex justify-center gap-2 mb-4">
-            {otpDigits.map((digit, index) => (
-              <input
-                key={index}
-                type="text"
-                maxLength="1"
-                value={digit}
-                onChange={(e) => handleOtpChange(e.target, index)}
-                onKeyDown={(e) => handleKeyDown(e, index)}
-                ref={(el) => (inputRefs.current[index] = el)}
-                className={`w-12 h-12 text-center text-2xl border-2 rounded-md shadow-sm 
-                  ${digit ? "border-primary" : "border-gray-300"}
-                  focus:outline-none  sm:text-sm`}
-                required
-                disabled={loading || countdown === 0}
-              />
-            ))}
+            <div className="mt-16 space-y-3">
+              <h1 className="text-3xl font-semibold leading-tight">Enter the one-time code.</h1>
+              <p className="text-sm text-white/80">
+                For your protection this code expires quickly. Keep the window open while you verify.
+              </p>
+            </div>
+
+            <div className="mt-10 grid grid-cols-2 gap-3 text-sm text-white/80">
+              <div className="rounded-2xl border border-white/25 bg-white/10 p-4">
+                <p className="text-xs uppercase tracking-wide text-white/60">Destination</p>
+                <p className="mt-2 font-semibold break-words">{type === "email" ? identifier : `+91 ${identifier}`}</p>
+              </div>
+              <div className="rounded-2xl border border-white/25 bg-white/10 p-4">
+                <p className="text-xs uppercase tracking-wide text-white/60">Time left</p>
+                <p className="mt-2 font-semibold">{countdown > 0 ? formatTime(countdown) : "Expired"}</p>
+              </div>
+            </div>
           </div>
 
-          {countdown > 0 ? (
-            <p className="text-center text-sm text-gray-500">
-              OTP expires in {formatTime(countdown)}
-            </p>
-          ) : (
-            <p className="text-center text-sm text-red-500">
-              OTP expired. Please resend.
-            </p>
-          )}
+          <div className="bg-white/90 p-8 backdrop-blur-xl sm:p-10">
+            <div className="mb-6 space-y-2 animate-fade-delay">
+              <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
+                Verify OTP
+              </p>
+              <h2 className="text-2xl font-semibold text-slate-900">Complete your sign-in</h2>
+              <p className="text-sm text-slate-600">
+                Enter the 6-digit code sent to {type === "email" ? identifier : `+91 ${identifier}`}.
+              </p>
+            </div>
 
-          <button
-            type="submit"
-            className="w-full py-2 px-4 rounded-md text-sm font-medium text-white bg-primary"
-            disabled={loading || countdown === 0 || otpDigits.join("").length !== 6}
-          >
-            {loading ? "Verifying..." : "Verify OTP & Login"}
-          </button>
+            <form onSubmit={handleVerifyOtp} className="space-y-6">
+              <div className="flex justify-center gap-3">
+                {otpDigits.map((digit, index) => (
+                  <input
+                    key={index}
+                    type="text"
+                    maxLength="1"
+                    value={digit}
+                    onChange={(e) => handleOtpChange(e.target, index)}
+                    onKeyDown={(e) => handleKeyDown(e, index)}
+                    onPaste={handlePaste}
+                    ref={(el) => (inputRefs.current[index] = el)}
+                    className={`h-12 w-12 rounded-xl border text-center text-xl font-semibold shadow-sm transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-60 ${digit ? "border-primary bg-primary/5 text-primary" : "border-slate-200 bg-white/80 text-slate-900"}`}
+                    required
+                    disabled={loading || countdown === 0}
+                  />
+                ))}
+              </div>
 
-          <button
-            type="button"
-            onClick={handleResendOtp}
-            className="w-full py-2 px-4 mt-2 rounded-md text-sm font-medium text-primary border border-primary bg-white hover:bg-gray-50"
-            disabled={loading || !canResend}
-          >
-            {loading ? "Sending new OTP..." : "Resend OTP"}
-          </button>
-        </form>
+              {countdown > 0 ? (
+                <p className="text-center text-sm text-slate-600">
+                  Code expires in <span className="font-semibold text-primary">{formatTime(countdown)}</span>
+                </p>
+              ) : (
+                <p className="text-center text-sm text-red-500 font-medium">
+                  OTP expired. Request a new code.
+                </p>
+              )}
+
+              <button
+                type="submit"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-primary to-primary-light px-4 py-3 text-sm font-semibold text-white shadow-lg shadow-primary/30 transition hover:translate-y-0.5 hover:shadow-xl focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/60 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-70"
+                disabled={loading || countdown === 0 || otpDigits.join("").length !== 6}
+              >
+                {loading ? "Verifying..." : "Verify & Continue"}
+              </button>
+
+              <button
+                type="button"
+                onClick={handleResendOtp}
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/40 bg-white px-4 py-3 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+                disabled={loading || !canResend}
+              >
+                {loading ? "Sending new OTP..." : "Send a new code"}
+              </button>
+
+              <div className="text-center text-xs text-slate-500">
+                Trouble? <a className="font-semibold text-primary hover:text-primary-light" href="mailto:support@morjodi.com">Contact support</a>
+              </div>
+            </form>
+          </div>
+        </div>
       </div>
     </div>
   );
 };
 
 export default VerifyOtp;
+
+

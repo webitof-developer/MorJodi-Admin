@@ -2,7 +2,7 @@ import React, { useState, useEffect } from "react";
 import axios from "axios";
 import { useParams, useNavigate } from "react-router-dom";
 import API_BASE_URL from "../../components/Config";
-import Swal from "sweetalert2";
+import Swal from "/src/utils/swalTheme";
 
 const EditLocation = () => {
   const { id } = useParams();
@@ -88,3 +88,5 @@ const EditLocation = () => {
 };
 
 export default EditLocation;
+
+

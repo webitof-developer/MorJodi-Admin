@@ -23,6 +23,8 @@ import EditTermsPrivacy from "./routes/Pages/EditTermsPrivacy";
 import EditRaasi from "./routes/Pages/EditRaasi";
 
 import ManageUsers from "./routes/Pages/ManageUsers";
+import PremiumUsers from "./routes/Pages/PremiumUsers";
+import ExpiredUsers from "./routes/Pages/ExpiredUsers";
 import ManageReligion from "./routes/Pages/ManageReligion";
 import AddReligion from "./routes/Pages/AddReligion";
 import ManageCaste from "./routes/Pages/ManageCaste";
@@ -74,6 +76,7 @@ import EditComplaint from "./routes/Pages/EditComplaint";
 
 import RefrealSetting from "./routes/Pages/RefrealSetting";
 import AppShareLinkSetting from "./routes/Pages/AppShareLinkSetting";
+import IdManagement from "./routes/Pages/IdManagement";
 
 
 
@@ -82,6 +85,7 @@ import AdminNotifications from "./routes/Pages/AdminNotifications";
 import DefaultUserSetting from "./routes/Pages/DefaultUserSetting";
 import DeletionRequestDetails from "./routes/Pages/DeletionRequestDetails";
 import ComplaintDetails from "./routes/Pages/ComplaintDetails";
+import ThemeSettings from "./routes/Pages/ThemeSettings";
 
 function App() {
     const router = createBrowserRouter([
@@ -98,11 +102,8 @@ function App() {
             element: <VerifyOtp />,
         },
    
+
    
-      {
-            path: "/",
-            element:  <Home />,
-        },
         {
             path: "/",
             element: <Layout />,
@@ -178,11 +179,26 @@ function App() {
                     element: <EditRaasi />,
                 }, 
                 
-                  {
+                {
                     path:"/users",
                     index: true,
                     element: <ManageUsers />,
                 }, 
+                {
+                    path:"/theme-settings",
+                    index: true,
+                    element: <ThemeSettings />,
+                },
+                {
+                    path:"/premium-users",
+                    index: true,
+                    element: <PremiumUsers />,
+                },
+                {
+                    path:"/expired-users",
+                    index: true,
+                    element: <ExpiredUsers />,
+                },
                     {
                     path:"/religion",
                     index: true,
@@ -387,6 +403,11 @@ function App() {
                     path: "/app-share-link-setting",
                     index: true,
                     element: <AppShareLinkSetting />,
+                },
+                {
+                    path: "/id-management",
+                    index: true,
+                    element: <IdManagement />,
                 },
                 {
                     path: "/defaultusersetting",
