@@ -47,6 +47,9 @@ import CreateProfile from "./routes/Pages/CreateProfile";
 import ManagePlans from "./routes/Pages/ManagePlans";
 import AddPlan from "./routes/Pages/AddPlan";
 import EditPlan from "./routes/Pages/EditPlan";
+import ManageCoupons from "./routes/Pages/ManageCoupons";
+import AddCoupon from "./routes/Pages/AddCoupon";
+import EditCoupon from "./routes/Pages/EditCoupon";
 import Home from "./routes/Pages/Home";
 import AddBanner from "./routes/Pages/AddBanner";
 import EditBanner from "./routes/Pages/EditBanner";
@@ -310,6 +313,11 @@ function App() {
                     element: <ManagePlans />,
                 }, 
                       {
+                    path:"/coupons",
+                    index: true,
+                    element: <ManageCoupons />,
+                }, 
+                      {
                     path:"/addplan",
                     index: true,
                     element: <AddPlan />,
@@ -317,6 +325,16 @@ function App() {
                     path:"/editplan/:id",
                     index: true,
                     element: <EditPlan />,
+                }, 
+                      {
+                    path:"/add-coupon",
+                    index: true,
+                    element: <AddCoupon />,
+                }, 
+                      {
+                    path:"/edit-coupon/:id",
+                    index: true,
+                    element: <EditCoupon />,
                 }, 
                  {
                     path: "/addbanner",

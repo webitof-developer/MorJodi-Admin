@@ -248,6 +248,15 @@
   margin-top: 12px;
 }
 
+.swal2-actions {
+  gap: 12px;
+}
+
+.swal2-actions .swal-confirm,
+.swal2-actions .swal-cancel {
+  margin: 0 !important;
+}
+
 .swal-text {
   font-size: 14px;
   color: #475569;
@@ -315,6 +324,10 @@
 
 .swal-icon svg path {
   stroke: var(--primary-color);
+}
+
+.swal2-container.swal-container {
+  z-index: 10050 !important;
 }
 
 .swal2-icon {

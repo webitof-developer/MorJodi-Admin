@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from "react";
+import { createPortal } from "react-dom";
 import axios from "axios";
+import { useDebounce } from "use-debounce";
 import {
   ShieldOff,
   ShieldCheck,
@@ -11,6 +13,14 @@ import {
   Phone,
   Fingerprint,
   Download,
+  Crown,
+  PauseCircle,
+  CalendarPlus,
+  Ban,
+  ArrowUpRight,
+  ArrowDownRight,
+  Calendar,
+  X,
 } from "lucide-react";
 import Swal from "/src/utils/swalTheme";
 import img1 from '../../assets/user-1.jpg';
@@ -31,6 +41,19 @@ const ManageUser = () => {
   const [summary, setSummary] = useState({ total: 0, premium: 0, blocked: 0, pendingApproval: 0 });
   const [totalPages, setTotalPages] = useState(1);
   const [totalFiltered, setTotalFiltered] = useState(0);
+  const [plans, setPlans] = useState([]);
+  const [subscriptionDrawerOpen, setSubscriptionDrawerOpen] = useState(false);
+  const [activeSubscriptionUser, setActiveSubscriptionUser] = useState(null);
+  const [portalReady, setPortalReady] = useState(false);
+  const [subscriptionForm, setSubscriptionForm] = useState({
+    action: "assign",
+    planId: "",
+    extendDays: "30",
+    pauseDays: "7",
+    cancelMode: "immediate",
+    customDays: "",
+    note: "",
+  });
   const [searchCriteria, setSearchCriteria] = useState({
     searchTerm: "",
     searchBy: "name", // name | phone | id
@@ -38,6 +61,7 @@ const ManageUser = () => {
     approval: "",
     status: "",
   });
+  const [debouncedSearchCriteria] = useDebounce(searchCriteria, 300);
   const [profilePrefix, setProfilePrefix] = useState("MJ");
   const [selectedIds, setSelectedIds] = useState(new Set());
   const [bulkActionChoice, setBulkActionChoice] = useState("");
@@ -46,21 +70,32 @@ const ManageUser = () => {
   const getAvatar = (index) => images[index % images.length];
 
   useEffect(() => {
-    fetchUsers();
-    fetchPrefix();
-  }, [page, pageSize, searchCriteria]);
+    fetchUsers(debouncedSearchCriteria);
+  }, [page, pageSize, debouncedSearchCriteria]);
 
-  const fetchUsers = async () => {
+  useEffect(() => {
+    fetchPlans();
+  }, []);
+
+  useEffect(() => {
+    fetchPrefix();
+  }, []);
+
+  useEffect(() => {
+    setPortalReady(true);
+  }, []);
+
+  const fetchUsers = async (criteria) => {
     setLoading(true);
     try {
       const params = {
         page,
         limit: pageSize,
-        searchTerm: searchCriteria.searchTerm,
-        searchBy: searchCriteria.searchBy,
-        premium: searchCriteria.premium,
-        approval: searchCriteria.approval,
-        status: searchCriteria.status,
+        searchTerm: criteria.searchTerm,
+        searchBy: criteria.searchBy,
+        premium: criteria.premium,
+        approval: criteria.approval,
+        status: criteria.status,
       };
       const { data } = await axios.get(`${API_BASE_URL}/api/user/alluser`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -91,6 +126,15 @@ const ManageUser = () => {
       }
     } catch (error) {
       console.error("Error fetching prefix:", error);
+    }
+  };
+
+  const fetchPlans = async () => {
+    try {
+      const { data } = await axios.get(`${API_BASE_URL}/api/plans`);
+      setPlans(Array.isArray(data) ? data : []);
+    } catch (error) {
+      console.error("Error fetching plans:", error);
     }
   };
 
@@ -144,6 +188,140 @@ const ManageUser = () => {
     }
 
     return `${prefix}${initials}${sequence}${dobDay}`;
+  };
+
+  const formatDate = (value) => {
+    if (!value) return "-";
+    const date = new Date(value);
+    if (Number.isNaN(date.getTime())) return "-";
+    return date.toLocaleDateString();
+  };
+
+  const getPlanLabel = (user) => {
+    return (
+      user?.subscription?.plan?.name ||
+      user?.plan?.name ||
+      user?.planName ||
+      (user?.isPremium ? "Premium" : "Free")
+    );
+  };
+
+  const getSubscriptionStatus = (user) => {
+    const now = new Date();
+    const pausedUntil = user?.subscription?.pausedUntil ? new Date(user.subscription.pausedUntil) : null;
+    const cancelAt = user?.subscription?.cancelAt ? new Date(user.subscription.cancelAt) : null;
+    if (pausedUntil && pausedUntil > now) {
+      return { label: "Paused", tone: "bg-amber-100 text-amber-700" };
+    }
+    if (cancelAt && cancelAt > now) {
+      return { label: "Canceling", tone: "bg-rose-100 text-rose-700" };
+    }
+    if (!user?.isPremium) {
+      return { label: "Free", tone: "bg-slate-100 text-slate-700" };
+    }
+    if (user?.subscription?.endDate || user?.premiumExpiresAt) {
+      const end = new Date(user.subscription?.endDate || user.premiumExpiresAt);
+      if (end <= now) {
+        return { label: "Expired", tone: "bg-gray-200 text-gray-700" };
+      }
+    }
+    return { label: "Active", tone: "bg-emerald-100 text-emerald-700" };
+  };
+
+  const openSubscriptionDrawer = (user) => {
+    const fallbackPlan = plans.find((plan) => plan.isFree) || plans[0];
+    setActiveSubscriptionUser(user);
+    setSubscriptionForm((prev) => ({
+      ...prev,
+      action: "assign",
+      planId: user?.subscription?.plan?.id || user?.planId || fallbackPlan?._id || "",
+      extendDays: "30",
+      pauseDays: "7",
+      cancelMode: "immediate",
+      note: "",
+      customDays: "",
+    }));
+    setSubscriptionDrawerOpen(true);
+  };
+
+  const closeSubscriptionDrawer = () => {
+    setSubscriptionDrawerOpen(false);
+    setActiveSubscriptionUser(null);
+  };
+
+  const resolveDays = (value, customValue) => {
+    if (value === "custom") {
+      return Math.max(1, Number(customValue) || 0);
+    }
+    return Math.max(1, Number(value) || 0);
+  };
+
+  const applySubscriptionAction = async () => {
+    if (!activeSubscriptionUser) return;
+    const action = subscriptionForm.action;
+    const plan = plans.find((p) => p._id === subscriptionForm.planId);
+    const needsPlan = ["assign", "upgrade", "downgrade"].includes(action);
+    if (needsPlan && !plan) {
+      Swal.fire("Missing plan", "Select a plan before applying changes.", "warning");
+      return;
+    }
+
+    const confirm = await Swal.fire({
+      title: "Apply subscription change?",
+      text: `This will ${action} the subscription for ${activeSubscriptionUser.fullName}.`,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonText: "Apply change",
+    });
+    if (!confirm.isConfirmed) return;
+
+    const payload = {
+      action,
+      note: subscriptionForm.note || "",
+    };
+    if (needsPlan) {
+      payload.planId = subscriptionForm.planId;
+    }
+    if (action === "extend") {
+      payload.days = resolveDays(subscriptionForm.extendDays, subscriptionForm.customDays);
+    }
+    if (action === "pause") {
+      payload.days = resolveDays(subscriptionForm.pauseDays, subscriptionForm.customDays);
+    }
+    if (action === "cancel") {
+      payload.cancelMode = subscriptionForm.cancelMode;
+    }
+
+    try {
+      const { data } = await axios.post(
+        `${API_BASE_URL}/api/admin-subscriptions/${activeSubscriptionUser._id}`,
+        payload,
+        { headers: { Authorization: `Bearer ${token}` } },
+      );
+
+      const updatedUser = data?.user || {};
+      const updatedSubscription = data?.subscription || null;
+
+      setUsers((prev) =>
+        prev.map((u) =>
+          u._id === activeSubscriptionUser._id
+            ? { ...u, ...updatedUser, subscription: updatedSubscription }
+            : u,
+        ),
+      );
+      setActiveSubscriptionUser((prev) =>
+        prev ? { ...prev, ...updatedUser, subscription: updatedSubscription } : prev,
+      );
+      await Swal.fire("Updated", "Subscription updated successfully.", "success");
+      closeSubscriptionDrawer();
+    } catch (error) {
+      console.error("Subscription update failed:", error);
+      Swal.fire(
+        "Error",
+        error?.response?.data?.message || "Failed to update subscription.",
+        "error",
+      );
+    }
   };
 
   const handleDelete = async (id) => {
@@ -346,6 +524,9 @@ const ManageUser = () => {
       Name: u.fullName,
       Phone: u.phoneNumber,
       Premium: u.isPremium ? "Yes" : "No",
+      Plan: getPlanLabel(u),
+      SubscriptionStatus: getSubscriptionStatus(u).label,
+      ExpiresAt: formatDate(u.subscription?.endDate || u.premiumExpiresAt),
       Approved: u.isApproved ? "Yes" : "No",
       Status: u.isBlocked ? "Blocked" : "Active",
     }));
@@ -573,6 +754,7 @@ const ManageUser = () => {
                 <th className="table-head text-xs">Name</th>
                 <th className="table-head text-xs">Phone</th>
                 <th className="table-head text-xs">Premium</th>
+                <th className="table-head text-xs">Subscription</th>
                 <th className="table-head text-xs">Approval</th>
                 <th className="table-head text-xs">Status</th>
                 <th className="table-head text-xs">Actions</th>
@@ -614,6 +796,36 @@ const ManageUser = () => {
                           Free
                         </span>
                       )}
+                    </td>
+                    <td className="table-cell">
+                      <div className="flex flex-col gap-1">
+                        <div className="flex flex-wrap items-center gap-1.5">
+                          <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+                            {getPlanLabel(user)}
+                          </span>
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${getSubscriptionStatus(user).tone}`}
+                          >
+                            {getSubscriptionStatus(user).label}
+                          </span>
+                        </div>
+                        <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                          Ends {formatDate(user.subscription?.endDate || user.premiumExpiresAt)}
+                        </span>
+                        {user.subscription?.pausedUntil && (
+                          <span className="text-[11px] text-amber-600">
+                            Paused till {formatDate(user.subscription.pausedUntil)}
+                          </span>
+                        )}
+                        <button
+                          type="button"
+                          onClick={() => openSubscriptionDrawer(user)}
+                          className="mt-1 inline-flex w-fit items-center gap-1 rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 text-[11px] font-semibold text-indigo-700 shadow-sm transition hover:-translate-y-[1px] hover:shadow-md"
+                        >
+                          <Crown size={12} />
+                          Manage
+                        </button>
+                      </div>
                     </td>
                     <td className="table-cell">
                       {user.isApproved ? (
@@ -671,7 +883,7 @@ const ManageUser = () => {
                 ))
               ) : (
                 <tr className="table-row">
-                  <td colSpan="11" className="table-cell text-center text-gray-500">No users found.</td>
+                  <td colSpan="12" className="table-cell text-center text-gray-500">No users found.</td>
                 </tr>
               )}
             </tbody>
@@ -706,6 +918,220 @@ const ManageUser = () => {
           </div>
         </div>
       </div>
+
+      {subscriptionDrawerOpen && activeSubscriptionUser && (() => {
+        const modal = (
+          <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md">
+            <div className="flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-800 dark:bg-slate-900">
+            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  Subscription Manager
+                </p>
+                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                  {activeSubscriptionUser.fullName}
+                </h3>
+                <p className="text-xs text-gray-500 dark:text-gray-400">
+                  Admin-only control. No payment required from the user.
+                </p>
+              </div>
+              <button
+                type="button"
+                onClick={closeSubscriptionDrawer}
+                className="rounded-full border border-gray-200 p-2 text-gray-500 transition hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300"
+              >
+                <X size={16} />
+              </button>
+            </div>
+
+            <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
+              <div className="grid gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-slate-800">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+                    {getPlanLabel(activeSubscriptionUser)}
+                  </span>
+                  <span
+                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${getSubscriptionStatus(activeSubscriptionUser).tone}`}
+                  >
+                    {getSubscriptionStatus(activeSubscriptionUser).label}
+                  </span>
+                </div>
+                <div className="grid gap-3 text-xs text-gray-600 dark:text-gray-300 sm:grid-cols-3">
+                  <div className="flex items-center gap-2">
+                    <Calendar size={14} className="text-gray-500" />
+                    <span>
+                      Ends: {formatDate(activeSubscriptionUser.subscription?.endDate || activeSubscriptionUser.premiumExpiresAt)}
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <PauseCircle size={14} className="text-gray-500" />
+                    <span>Paused till: {formatDate(activeSubscriptionUser.subscription?.pausedUntil)}</span>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Ban size={14} className="text-gray-500" />
+                    <span>Cancel on: {formatDate(activeSubscriptionUser.subscription?.cancelAt)}</span>
+                  </div>
+                </div>
+              </div>
+
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                  Admin Actions
+                </p>
+                <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                  {[
+                    { key: "assign", label: "Assign", icon: Crown, helper: "Grant a plan instantly" },
+                    { key: "upgrade", label: "Upgrade", icon: ArrowUpRight, helper: "Move to higher plan" },
+                    { key: "downgrade", label: "Downgrade", icon: ArrowDownRight, helper: "Move to lower plan" },
+                    { key: "pause", label: "Pause", icon: PauseCircle, helper: "Temporarily stop access" },
+                    { key: "extend", label: "Extend", icon: CalendarPlus, helper: "Add extra days" },
+                    { key: "cancel", label: "Cancel", icon: Ban, helper: "End subscription" },
+                  ].map((action) => {
+                    const Icon = action.icon;
+                    return (
+                      <button
+                        key={action.key}
+                        type="button"
+                        onClick={() => setSubscriptionForm((prev) => ({ ...prev, action: action.key }))}
+                        className={`rounded-xl border px-3 py-3 text-left text-sm font-semibold shadow-sm transition hover:-translate-y-[1px] hover:shadow-md ${
+                          subscriptionForm.action === action.key
+                            ? "border-primary bg-primary/10 text-primary"
+                            : "border-gray-200 bg-white text-gray-700 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-200"
+                        }`}
+                      >
+                        <div className="flex items-center gap-2">
+                          <Icon size={16} />
+                          {action.label}
+                        </div>
+                        <p className="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">{action.helper}</p>
+                      </button>
+                    );
+                  })}
+                </div>
+              </div>
+
+              <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+                <div className="grid gap-3 sm:grid-cols-2">
+                  {["assign", "upgrade", "downgrade"].includes(subscriptionForm.action) && (
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      Plan
+                      <select
+                        value={subscriptionForm.planId}
+                        onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, planId: e.target.value }))}
+                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      >
+                        <option value="">Select a plan</option>
+                        {plans.map((plan) => (
+                          <option key={plan._id} value={plan._id}>
+                            {plan.name} - {plan.durationInDays} days
+                          </option>
+                        ))}
+                      </select>
+                    </label>
+                  )}
+
+                  {subscriptionForm.action === "extend" && (
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      Extend by
+                      <select
+                        value={subscriptionForm.extendDays}
+                        onChange={(e) =>
+                          setSubscriptionForm((prev) => ({ ...prev, extendDays: e.target.value }))
+                        }
+                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      >
+                        <option value="7">7 days</option>
+                        <option value="30">30 days</option>
+                        <option value="90">90 days</option>
+                        <option value="custom">Custom</option>
+                      </select>
+                    </label>
+                  )}
+
+                  {subscriptionForm.action === "pause" && (
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      Pause for
+                      <select
+                        value={subscriptionForm.pauseDays}
+                        onChange={(e) =>
+                          setSubscriptionForm((prev) => ({ ...prev, pauseDays: e.target.value }))
+                        }
+                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      >
+                        <option value="7">7 days</option>
+                        <option value="14">14 days</option>
+                        <option value="30">30 days</option>
+                        <option value="custom">Custom</option>
+                      </select>
+                    </label>
+                  )}
+
+                  {subscriptionForm.action === "cancel" && (
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      Cancellation mode
+                      <select
+                        value={subscriptionForm.cancelMode}
+                        onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, cancelMode: e.target.value }))}
+                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      >
+                        <option value="immediate">Immediate</option>
+                        <option value="end_of_cycle">End of cycle</option>
+                      </select>
+                    </label>
+                  )}
+
+                  {((subscriptionForm.action === "extend" && subscriptionForm.extendDays === "custom") ||
+                    (subscriptionForm.action === "pause" && subscriptionForm.pauseDays === "custom")) && (
+                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      Custom days
+                      <input
+                        type="number"
+                        min="1"
+                        value={subscriptionForm.customDays}
+                        onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, customDays: e.target.value }))}
+                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        placeholder="e.g. 21"
+                      />
+                    </label>
+                  )}
+
+                  <label className="sm:col-span-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                    Internal note
+                    <textarea
+                      value={subscriptionForm.note}
+                      onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, note: e.target.value }))}
+                      className="mt-1 min-h-[80px] w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                      placeholder="Log why this change was made."
+                    />
+                  </label>
+                </div>
+              </div>
+            </div>
+
+            <div className="flex items-center justify-between border-t border-gray-200 px-5 py-4 dark:border-gray-800">
+              <button
+                type="button"
+                onClick={closeSubscriptionDrawer}
+                className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:border-primary hover:text-primary dark:border-gray-700 dark:text-gray-300"
+              >
+                Close
+              </button>
+              <button
+                type="button"
+                onClick={applySubscriptionAction}
+                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-[1px] hover:shadow-md"
+              >
+                Apply Changes
+              </button>
+            </div>
+          </div>
+          </div>
+        );
+        if (!portalReady || typeof document === "undefined" || !document.body) {
+          return modal;
+        }
+        return createPortal(modal, document.body);
+      })()}
     </div>
   );
 };

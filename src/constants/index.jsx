@@ -2,25 +2,26 @@
 // Make sure you have @tabler/icons-react installed: npm install @tabler/icons-react
 import {
   IconDashboard,
-  IconUser, 
-  IconUsers, 
+  IconUser,
+  IconUsers,
   IconSettings,
-  IconScale, 
-  IconInfoCircle, 
-  IconFileDescription, 
-  IconPhoneCall, 
-  IconBook,      
-  IconBriefcase,  
-  IconLanguage,   
-  IconRosette,    
-  IconUsersGroup, 
-  IconUserCircle, 
+  IconScale,
+  IconInfoCircle,
+  IconFileDescription,
+  IconPhoneCall,
+  IconBook,
+  IconBriefcase,
+  IconLanguage,
+  IconRosette,
+  IconUsersGroup,
+  IconUserCircle,
   IconPhoto,
   IconBuildingChurch,
   IconZodiacLeo,
   IconClockHour5,
   IconCrown,
-  IconPalette
+  IconPalette,
+  IconTag
 } from "@tabler/icons-react";
 import { FaGift } from "react-icons/fa";
 export const navbarLinks = {
@@ -31,10 +32,11 @@ export const navbarLinks = {
       path: "/dashboard",
     },
     {
-      label: "User Management", 
+      label: "User Management",
       icon: IconUser,
       path: "/users",
     },
+
     {
       label: "Premium Users",
       icon: IconCrown,
@@ -89,12 +91,12 @@ export const navbarLinks = {
           icon: IconLanguage,
           path: "/mothertongue",
         },
-          {
+        {
           label: "Raasi",
           icon: IconBuildingChurch,
           path: "/raasi",
         },
-          {
+        {
           label: "Location",
           icon: IconZodiacLeo,
           path: "/location",
@@ -112,26 +114,32 @@ export const navbarLinks = {
           icon: IconPalette,
           path: "/theme-settings",
         },
-      {
-          label: "Plans Management",  
+        {
+          label: "Plans Management",
           icon: IconScale,
           path: "/plans",
         },
-            {
-          label: "Refreal Setting",  
+        {
+          label: "Coupons",
+          icon: IconTag,
+          path: "/coupons",
+        },
+        {
+          label: "Refreal Setting",
           icon: FaGift,
           path: "/refrealsetting",
         },
-         {
-          label: "Default User Settings",  
+        {
+          label: "Default User Settings",
           icon: IconUsers,
           path: "/defaultusersetting",
         },
-         {
-        label: "Manage Banners",
-        icon:  IconPhoto,
-        path: "/managebanner",
-      },
+
+        {
+          label: "Manage Banners",
+          icon: IconPhoto,
+          path: "/managebanner",
+        },
         {
           label: "Manage Advertising",
           icon: IconPhoto,

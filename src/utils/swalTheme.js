@@ -14,6 +14,7 @@ const infoIconHtml =
 
 const baseConfig = {
   customClass: {
+    container: "swal-container",
     popup: "swal-modern",
     confirmButton: "swal-confirm",
     cancelButton: "swal-cancel",

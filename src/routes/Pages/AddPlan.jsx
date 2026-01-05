@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import Swal from "/src/utils/swalTheme";
 import { useNavigate } from "react-router-dom";
@@ -10,7 +10,7 @@ const AVAILABLE_FEATURES = [
   "Contact View",
   "Photo View",
   "See Who Viewed Your Profile",
-  "Interest Request"
+  "Interest Request",
 ];
 
 const AddPlan = () => {
@@ -44,22 +44,38 @@ const AddPlan = () => {
   }, [price, offerPrice]);
 
   const handleFeatureToggle = (featureName) => {
-    const featureIndex = features.findIndex(f => f.name === featureName);
+    const featureIndex = features.findIndex((f) => f.name === featureName);
     if (featureIndex > -1) {
       setFeatures(features.filter((f) => f.name !== featureName));
     } else {
-      setFeatures([...features, { name: featureName, limit: 0 }]);
+      if (featureName === "Contact View") {
+        setFeatures([
+          ...features,
+          { name: featureName, monthlyLimit: 0, dailyLimit: 0, limit: 0 },
+        ]);
+      } else {
+        setFeatures([...features, { name: featureName, limit: 0 }]);
+      }
     }
   };
 
-  const handleLimitChange = (featureName, limit) => {
-    const newFeatures = features.map(f => {
-      if (f.name === featureName) {
-        return { ...f, limit: parseInt(limit, 10) || 0 };
+  const updateFeature = (featureName, updates) => {
+    setFeatures((prev) =>
+      prev.map((f) => (f.name === featureName ? { ...f, ...updates } : f))
+    );
+  };
+
+  const handleLimitChange = (featureName, field, value) => {
+    const parsedValue = parseInt(value, 10) || 0;
+    if (featureName === "Contact View") {
+      const updates = { [field]: parsedValue };
+      if (field === "dailyLimit") {
+        updates.limit = parsedValue;
       }
-      return f;
-    });
-    setFeatures(newFeatures);
+      updateFeature(featureName, updates);
+    } else {
+      updateFeature(featureName, { limit: parsedValue });
+    }
   };
 
   const handleSubmit = async (e) => {
@@ -88,146 +104,173 @@ const AddPlan = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
-      <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
-        Add Plan
-      </h2>
+    <div className="space-y-6">
+      <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+        <h2 className="text-2xl font-semibold text-gray-900 dark:text-white">Add Subscription Plan</h2>
+        <p className="mt-1 text-sm text-gray-600 dark:text-gray-300">
+          Configure pricing, duration, and per-feature limits. Contact View supports monthly and optional daily caps.
+        </p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="isFree"
-            checked={isFree}
-            onChange={(e) => setIsFree(e.target.checked)}
-            className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          />
-          <label
-            htmlFor="isFree"
-            className="ml-2 text-gray-700 dark:text-gray-300"
-          >
-            Is Free Plan?
-          </label>
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+          <div className="flex items-center gap-2">
+            <input
+              type="checkbox"
+              id="isFree"
+              checked={isFree}
+              onChange={(e) => setIsFree(e.target.checked)}
+              className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600"
+            />
+            <label htmlFor="isFree" className="text-sm font-semibold text-gray-700 dark:text-gray-300">
+              This is a free plan
+            </label>
+          </div>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Plan name
+              <input
+                type="text"
+                placeholder="e.g., Silver Plan"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                required
+                className="mt-2 block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
+              />
+            </label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Price (Rs.)
+              <input
+                type="number"
+                placeholder="e.g., 999"
+                value={price}
+                onChange={(e) => setPrice(Number(e.target.value))}
+                required
+                disabled={isFree}
+                className="mt-2 block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:bg-gray-100 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
+              />
+            </label>
+          </div>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Offer price (Rs.)
+              <input
+                type="number"
+                placeholder="e.g., 799"
+                value={offerPrice}
+                onChange={(e) => setOfferPrice(Number(e.target.value))}
+                disabled={isFree}
+                className="mt-2 block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-green-500 focus:outline-none focus:ring-2 focus:ring-green-500/40 disabled:bg-gray-100 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
+              />
+            </label>
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Discount
+              <input
+                type="text"
+                value={`${discountPercent}%`}
+                readOnly
+                className="mt-2 block w-full rounded-lg border border-gray-300 bg-gray-100 px-4 py-2 text-sm text-gray-700 dark:border-gray-700 dark:bg-slate-800 dark:text-gray-300"
+              />
+            </label>
+          </div>
+
+          <div className="mt-6 grid gap-6 md:grid-cols-2">
+            <label className="block text-sm font-semibold text-gray-700 dark:text-gray-300">
+              Duration (days)
+              <input
+                type="number"
+                placeholder="e.g., 30"
+                value={durationInDays}
+                onChange={(e) => setDurationInDays(Number(e.target.value))}
+                required
+                disabled={isFree}
+                className="mt-2 block w-full rounded-lg border border-gray-300 px-4 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 disabled:bg-gray-100 dark:border-gray-700 dark:bg-slate-800 dark:text-white"
+              />
+            </label>
+            <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-300">
+              <input
+                type="checkbox"
+                checked={isActive}
+                onChange={(e) => setIsActive(e.target.checked)}
+                className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600"
+              />
+              Plan is active
+            </label>
+          </div>
         </div>
 
-        {/* Basic Details */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300">
-              Plan Name
-            </label>
-            <input
-              type="text"
-              placeholder="e.g., Silver Plan"
-              value={name}
-              onChange={(e) => setName(e.target.value)}
-              required
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
-                dark:bg-gray-700 dark:text-white"
-            />
+        <div className="rounded-2xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+          <div className="flex items-start justify-between gap-4">
+            <div>
+              <h3 className="text-lg font-semibold text-gray-900 dark:text-white">Select features</h3>
+              <p className="text-sm text-gray-600 dark:text-gray-400">
+                Monthly Contact View limits control total usage per month. Daily limit is optional.
+              </p>
+            </div>
           </div>
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300">
-              Price (₹)
-            </label>
-            <input
-              type="number"
-              placeholder="e.g., 999"
-              value={price}
-              onChange={(e) => setPrice(Number(e.target.value))}
-              required
-              disabled={isFree}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
-                dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-        </div>
 
-        {/* Offer Price + Discount */}
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300">
-              Offer Price (₹)
-            </label>
-            <input
-              type="number"
-              placeholder="e.g., 799"
-              value={offerPrice}
-              onChange={(e) => setOfferPrice(Number(e.target.value))}
-              disabled={isFree}
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-green-500 
-                dark:bg-gray-700 dark:text-white"
-            />
-          </div>
-          <div>
-            <label className="block text-gray-700 dark:text-gray-300">
-              Discount %
-            </label>
-            <input
-              type="text"
-              value={`${discountPercent}%`}
-              readOnly
-              className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-                bg-gray-100 dark:bg-gray-600 text-gray-700 dark:text-white cursor-not-allowed"
-            />
-          </div>
-        </div>
-
-        {/* Duration */}
-        <div>
-          <label className="block text-gray-700 dark:text-gray-300">
-            Duration (in Days)
-          </label>
-          <input
-            type="number"
-            placeholder="e.g., 30, 90, 180"
-            value={durationInDays}
-            onChange={(e) => setDurationInDays(Number(e.target.value))}
-            required
-            disabled={isFree}
-            className="mt-1 block w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-md 
-              focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary 
-              dark:bg-gray-700 dark:text-white"
-          />
-        </div>
-
-        {/* Features */}
-        <div className="p-4 border border-gray-200 dark:border-gray-700 rounded-lg">
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-white mb-4">
-            Select Plan Features
-          </h3>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+          <div className="mt-5 grid gap-4 sm:grid-cols-2">
             {AVAILABLE_FEATURES.map((featureName) => {
-              const isChecked = features.some(f => f.name === featureName);
-              const featureLimit = features.find(f => f.name === featureName)?.limit ?? 0;
+              const isChecked = features.some((f) => f.name === featureName);
+              const feature = features.find((f) => f.name === featureName) || {};
               return (
-                <div key={featureName} className="flex flex-col gap-2 p-2 border rounded-md">
-                  <label className="flex items-center gap-2">
+                <div
+                  key={featureName}
+                  className="rounded-xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-700 dark:bg-slate-800"
+                >
+                  <label className="flex items-center gap-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
                     <input
                       type="checkbox"
                       checked={isChecked}
                       onChange={() => handleFeatureToggle(featureName)}
-                      className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded 
-                        focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 
-                        focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+                      className="h-4 w-4 rounded border-gray-300 text-primary focus:ring-primary dark:border-gray-600"
                     />
-                    <span className="text-gray-700 dark:text-gray-300">{featureName}</span>
+                    {featureName}
                   </label>
-                  {isChecked && (
-                    <div>
-                      <label className="text-sm text-gray-600 dark:text-gray-400">Limit (0 for unlimited)</label>
+
+                  {isChecked && featureName !== "Contact View" && (
+                    <div className="mt-3">
+                      <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                        Daily limit (0 = unlimited)
+                      </label>
                       <input
                         type="number"
-                        value={featureLimit}
-                        onChange={(e) => handleLimitChange(featureName, e.target.value)}
-                        className="mt-1 block w-full px-2 py-1 border border-gray-300 dark:border-gray-600 rounded-md 
-                          focus:outline-none focus:ring-1 focus:ring-primary 
-                          dark:bg-gray-700 dark:text-white"
+                        value={feature.limit ?? 0}
+                        onChange={(e) => handleLimitChange(featureName, "limit", e.target.value)}
+                        className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
                       />
-                      {featureLimit === 0 && <span className="text-xs text-gray-500">(Unlimited)</span>}
+                    </div>
+                  )}
+
+                  {isChecked && featureName === "Contact View" && (
+                    <div className="mt-3 grid gap-3">
+                      <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                        Monthly limit (0 = unlimited)
+                        <input
+                          type="number"
+                          value={feature.monthlyLimit ?? 0}
+                          onChange={(e) =>
+                            handleLimitChange(featureName, "monthlyLimit", e.target.value)
+                          }
+                          className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                        />
+                      </label>
+                      <label className="text-xs font-semibold text-gray-600 dark:text-gray-400">
+                        Daily limit (optional, 0 = no daily cap)
+                        <input
+                          type="number"
+                          value={feature.dailyLimit ?? feature.limit ?? 0}
+                          onChange={(e) =>
+                            handleLimitChange(featureName, "dailyLimit", e.target.value)
+                          }
+                          className="mt-2 block w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-slate-900 dark:text-white"
+                        />
+                      </label>
+                      <p className="text-xs text-gray-500">
+                        If daily limit is 0, members can use the full monthly quota in a day.
+                      </p>
                     </div>
                   )}
                 </div>
@@ -236,35 +279,24 @@ const AddPlan = () => {
           </div>
         </div>
 
-        {/* Status */}
-        <div className="flex items-center">
-          <input
-            type="checkbox"
-            id="isActive"
-            checked={isActive}
-            onChange={(e) => setIsActive(e.target.checked)}
-            className="w-4 h-4 text-primary bg-gray-100 border-gray-300 rounded focus:ring-primary dark:focus:ring-primary dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
-          />
-          <label
-            htmlFor="isActive"
-            className="ml-2 text-gray-700 dark:text-gray-300"
+        <div className="flex items-center justify-end gap-3">
+          <button
+            type="button"
+            onClick={() => navigate(-1)}
+            className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:border-primary hover:text-primary dark:border-gray-700 dark:text-gray-200"
           >
-            Is Active?
-          </label>
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="rounded-lg bg-primary px-5 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-[1px] hover:shadow-md"
+          >
+            Add Plan
+          </button>
         </div>
-
-        {/* Submit */}
-        <button
-          type="submit"
-          className="w-40 bg-primary text-white font-medium py-2 rounded-md transition duration-300 hover:bg-opacity-80 flex items-center justify-center gap-2"
-        >
-          Add Plan
-        </button>
       </form>
     </div>
   );
 };
 
 export default AddPlan;
-
-

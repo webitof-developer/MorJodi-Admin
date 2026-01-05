@@ -4,13 +4,14 @@ import Swal from "/src/utils/swalTheme";
 import API_BASE_URL from "../../components/Config";
 
 const DefaultUserSetting = () => {
-  const token  = localStorage.getItem("authToken");
+  const token = localStorage.getItem("authToken");
   const [settings, setSettings] = useState({
     default_interest_limit: "",
     default_chat_limit: "",
     default_profile_view_limit: "",
     default_photo_view_limit: "",
-    
+    user_approval_mode: "manual", // Default
+
   });
 
   useEffect(() => {
@@ -24,7 +25,7 @@ const DefaultUserSetting = () => {
         acc[setting.key] = setting.value;
         return acc;
       }, {});
-      setSettings(fetchedSettings);
+      setSettings(prev => ({ ...prev, ...fetchedSettings }));
     } catch (error) {
       console.error("Error fetching settings:", error);
       Swal.fire("Error!", "Failed to fetch settings.", "error");
@@ -48,9 +49,9 @@ const DefaultUserSetting = () => {
       }));
 
       await axios.put(`${API_BASE_URL}/api/settings/default`,
-         {
-        settings: settingsArray,
-      },  {
+        {
+          settings: settingsArray,
+        }, {
         headers: { Authorization: `Bearer ${token}` }, // ✅ Add this
       });
 
@@ -63,12 +64,12 @@ const DefaultUserSetting = () => {
 
   return (
     <div className="container mx-auto p-4">
-    
+
       <form
         onSubmit={handleSubmit}
         className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4"
       >
-          <h1 className="text-lg font-semibold dark:text-white">Default User Settings</h1>
+        <h1 className="text-lg font-semibold dark:text-white">Default User Settings</h1>
         {Object.keys(settings).map((key) => (
           <div className="mb-4" key={key}>
             <label
@@ -82,17 +83,39 @@ const DefaultUserSetting = () => {
                 .replace(/referralBonus/, "Referral Bonus")}
               :
             </label>
-            <input
-              type="text"
-              id={key}
-              name={key}
-              value={settings[key]}
-              onChange={handleChange}
-              className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white 
-                         focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
-            />
+
+            {key === 'user_approval_mode' ? (
+              <div>
+                <select
+                  id={key}
+                  name={key}
+                  value={settings[key]}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white 
+                             focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+                >
+                  <option value="manual">Manual Approval</option>
+                  <option value="automatic">Automatic Approval</option>
+                </select>
+                <p className="text-xs text-gray-500 mt-1">
+                  <b>Manual:</b> New users must be approved by admin before accessing the app.<br />
+                  <b>Automatic:</b> New users are instantly approved and can access the app immediately.
+                </p>
+              </div>
+            ) : (
+              <input
+                type="text"
+                id={key}
+                name={key}
+                value={settings[key]}
+                onChange={handleChange}
+                className="w-full px-3 py-2 border rounded-md dark:bg-gray-700 dark:text-white 
+                           focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary"
+              />
+            )}
           </div>
-        ))}
+        ))
+        }
 
         <button
           type="submit"
@@ -101,8 +124,8 @@ const DefaultUserSetting = () => {
         >
           Save Settings
         </button>
-      </form>
-    </div>
+      </form >
+    </div >
   );
 };
 
