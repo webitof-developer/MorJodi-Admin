@@ -202,10 +202,10 @@ const VerifyOtp = () => {
       <div className="pointer-events-none absolute -right-16 bottom-10 h-64 w-64 rounded-full bg-primary-light opacity-30 blur-3xl animate-float-fast" />
 
       <div className="relative mx-auto w-full max-w-5xl">
-        <div className="grid w-full overflow-hidden rounded-3xl border border-white/10 bg-white/10 shadow-2xl backdrop-blur-2xl md:grid-cols-2 animate-rise">
+        <div className="grid w-full overflow-hidden rounded-3xl border border-white/10 bg-[#f8f9fa] shadow-sm/10 shadow-2xl backdrop-blur-2xl md:grid-cols-2 animate-rise">
           <div className="hidden flex-col justify-between bg-gradient-to-br from-primary to-primary-light p-10 text-white md:flex">
             <div className="flex items-center gap-3">
-              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/30 bg-white/15 animate-pop">
+              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/30 bg-[#f8f9fa] shadow-sm/15 animate-pop">
                 <img src="/FavIcon.png" alt="Mor Jodi logo" className="h-full w-full object-contain" />
               </div>
               <div>
@@ -222,18 +222,18 @@ const VerifyOtp = () => {
             </div>
 
             <div className="mt-10 grid grid-cols-2 gap-3 text-sm text-white/80">
-              <div className="rounded-2xl border border-white/25 bg-white/10 p-4">
+              <div className="rounded-2xl border border-white/25 bg-[#f8f9fa] shadow-sm/10 p-4">
                 <p className="text-xs uppercase tracking-wide text-white/60">Destination</p>
                 <p className="mt-2 font-semibold break-words">{type === "email" ? identifier : `+91 ${identifier}`}</p>
               </div>
-              <div className="rounded-2xl border border-white/25 bg-white/10 p-4">
+              <div className="rounded-2xl border border-white/25 bg-[#f8f9fa] shadow-sm/10 p-4">
                 <p className="text-xs uppercase tracking-wide text-white/60">Time left</p>
                 <p className="mt-2 font-semibold">{countdown > 0 ? formatTime(countdown) : "Expired"}</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-white/90 p-8 backdrop-blur-xl sm:p-10">
+          <div className="bg-[#f8f9fa] shadow-sm/90 p-8 backdrop-blur-xl sm:p-10">
             <div className="mb-6 space-y-2 animate-fade-delay">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
                 Verify OTP
@@ -256,7 +256,7 @@ const VerifyOtp = () => {
                     onKeyDown={(e) => handleKeyDown(e, index)}
                     onPaste={handlePaste}
                     ref={(el) => (inputRefs.current[index] = el)}
-                    className={`h-12 w-12 rounded-xl border text-center text-xl font-semibold shadow-sm transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-60 ${digit ? "border-primary bg-primary/5 text-primary" : "border-slate-200 bg-white/80 text-slate-900"}`}
+                    className={`h-12 w-12 rounded-xl border text-center text-xl font-semibold shadow-sm transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-60 ${digit ? "border-primary bg-primary/5 text-primary" : "border-slate-200 bg-[#f8f9fa] shadow-sm/80 text-slate-900"}`}
                     required
                     disabled={loading || countdown === 0}
                   />
@@ -284,7 +284,7 @@ const VerifyOtp = () => {
               <button
                 type="button"
                 onClick={handleResendOtp}
-                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/40 bg-white px-4 py-3 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
+                className="inline-flex w-full items-center justify-center gap-2 rounded-xl border border-primary/40 bg-[#f8f9fa] shadow-sm px-4 py-3 text-sm font-semibold text-primary transition hover:-translate-y-0.5 hover:border-primary hover:text-primary focus:outline-none focus-visible:ring-2 focus-visible:ring-primary/40 disabled:translate-y-0 disabled:cursor-not-allowed disabled:opacity-60"
                 disabled={loading || !canResend}
               >
                 {loading ? "Sending new OTP..." : "Send a new code"}

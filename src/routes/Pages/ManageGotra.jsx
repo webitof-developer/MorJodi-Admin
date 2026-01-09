@@ -9,6 +9,7 @@ const ManageGotra = () => {
   const token = localStorage.getItem("authToken");
   const [gotras, setGotras] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const [filterType, setFilterType] = useState("all"); // 'all', 'verified', 'review'
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -55,10 +56,17 @@ const ManageGotra = () => {
     });
   };
 
-  const filteredGotras = gotras.filter((g) =>
-    (g.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
-    (g.subCaste?.name || "").toLowerCase().includes(searchTerm.toLowerCase())
-  );
+  const filteredGotras = gotras.filter((g) => {
+    const matchesSearch =
+      (g.name || "").toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (g.subCaste?.name || "").toLowerCase().includes(searchTerm.toLowerCase());
+
+    if (!matchesSearch) return false;
+
+    if (filterType === "verified") return g.isVerified;
+    if (filterType === "review") return !g.isVerified;
+    return true; // 'all'
+  });
 
   if (loading) {
     return <div>Loading gotras...</div>;
@@ -79,6 +87,15 @@ const ManageGotra = () => {
             />
             <Search className="absolute left-3 top-3 text-gray-500 dark:text-gray-400" size={18} />
           </div>
+          <select
+            value={filterType}
+            onChange={(e) => setFilterType(e.target.value)}
+            className="input-soft"
+          >
+            <option value="all">All</option>
+            <option value="verified">Verified</option>
+            <option value="review">Under Review</option>
+          </select>
           <Link
             to="/addgotra"
             className="btn-primary flex items-center gap-2"
@@ -96,6 +113,7 @@ const ManageGotra = () => {
                 <th className="table-head">#</th>
                 <th className="table-head">Gotra Name</th>
                 <th className="table-head">SubCaste Name</th>
+                <th className="table-head">Status</th>
                 <th className="table-head">Actions</th>
               </tr>
             </thead>
@@ -107,18 +125,25 @@ const ManageGotra = () => {
                     <td className="table-cell">{gotra.name}</td>
                     <td className="table-cell">{gotra.subCaste?.name || "-"}</td>
                     <td className="table-cell">
-                        <div className="flex items-center gap-x-4">
-                            <Link to={`/edit-gotra/${gotra._id}`} className="text-blue-500 hover:text-blue-700" title="Edit">
-                                <FilePenLine size={20} />
-                            </Link>
-                            <button
-                                onClick={() => handleDelete(gotra._id)}
-                                className="text-red-500 hover:text-red-700"
-                                title="Delete Gotra"
-                            >
-                                <Trash size={20} />
-                            </button>
-                        </div>
+                      {gotra.isVerified ? (
+                        <span className="text-green-600 font-semibold px-2 py-1 bg-green-100 rounded text-xs">Verified</span>
+                      ) : (
+                        <span className="text-orange-600 font-semibold px-2 py-1 bg-orange-100 rounded text-xs">Under Review</span>
+                      )}
+                    </td>
+                    <td className="table-cell">
+                      <div className="flex items-center gap-x-4">
+                        <Link to={`/edit-gotra/${gotra._id}`} className="text-blue-500 hover:text-blue-700" title="Edit">
+                          <FilePenLine size={20} />
+                        </Link>
+                        <button
+                          onClick={() => handleDelete(gotra._id)}
+                          className="text-red-500 hover:text-red-700"
+                          title="Delete Gotra"
+                        >
+                          <Trash size={20} />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))

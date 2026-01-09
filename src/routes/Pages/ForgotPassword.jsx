@@ -71,7 +71,7 @@ const ForgotPassword = () => {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gray-100 p-4">
-      <div className="bg-white p-8 rounded-lg shadow-lg w-full max-w-md">
+      <div className="bg-[#f8f9fa] shadow-sm p-8 rounded-lg shadow-lg w-full max-w-md">
         {step === 1 ? (
           <form onSubmit={handleSendOtp} className="space-y-4">
             <h2 className="text-xl font-bold text-center text-gray-800 mb-6">Forgot Password</h2>

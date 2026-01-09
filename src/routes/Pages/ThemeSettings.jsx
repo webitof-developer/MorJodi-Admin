@@ -22,7 +22,7 @@ const ThemeSettings = () => {
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+        <div className="rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
           <h3 className="text-base font-semibold text-gray-900 dark:text-white">Theme option</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">Switch between light and dark modes.</p>
           <div className="mt-4 flex gap-3">
@@ -51,7 +51,7 @@ const ThemeSettings = () => {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+        <div className="rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
           <h3 className="text-base font-semibold text-gray-900 dark:text-white">Accent color</h3>
           <p className="text-sm text-gray-500 dark:text-gray-400">Choose your primary brand tint.</p>
           <div className="mt-4 grid grid-cols-6 gap-3">

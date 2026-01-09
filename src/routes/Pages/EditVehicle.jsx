@@ -99,7 +99,7 @@ const EditVehicle = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto mt-1 p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+    <div className="max-w-6xl mx-auto mt-1 p-6 bg-[#f8f9fa] shadow-sm dark:bg-gray-800 shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">Edit Vehicle</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
       <label className="block text-sm font-medium text-gray-700 dark:text-gray-300">Vehicle Type</label>

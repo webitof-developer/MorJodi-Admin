@@ -29,11 +29,12 @@ import img3 from '../../assets/user-3.jpg';
 import img4 from '../../assets/user-4.jpg';
 import API_BASE_URL from "../../components/Config";
 import { Link } from "react-router-dom";
+import { getImageUrl } from "../../utils/imageUtils";
 
 const ManageUser = () => {
   const token = localStorage.getItem('authToken');
   console.log(token)
- 
+
   const [users, setUsers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [page, setPage] = useState(1);
@@ -60,6 +61,7 @@ const ManageUser = () => {
     premium: "",
     approval: "",
     status: "",
+    gender: "",
   });
   const [debouncedSearchCriteria] = useDebounce(searchCriteria, 300);
   const [profilePrefix, setProfilePrefix] = useState("MJ");
@@ -96,6 +98,7 @@ const ManageUser = () => {
         premium: criteria.premium,
         approval: criteria.approval,
         status: criteria.status,
+        gender: criteria.gender,
       };
       const { data } = await axios.get(`${API_BASE_URL}/api/user/alluser`, {
         headers: { Authorization: `Bearer ${token}` },
@@ -361,13 +364,13 @@ const ManageUser = () => {
     }).then(async (result) => {
       if (result.isConfirmed) {
         try {
-       
+
           await axios.put(`${API_BASE_URL}/api/user/block/${id}`, {}, {
             headers: {
               Authorization: `Bearer ${token}`
             }
           });
-          
+
           const updatedUsers = users.map(user =>
             user._id === id ? { ...user, isBlocked: !isBlocked } : user
           );
@@ -383,34 +386,34 @@ const ManageUser = () => {
 
   const handleApprove = async (userId) => {
     Swal.fire({
-        title: "Are you sure?",
-        text: `You are about to approve this profile.`,
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#3085d6",
-        cancelButtonColor: "#d33",
-        confirmButtonText: `Yes, approve it!`,
+      title: "Are you sure?",
+      text: `You are about to approve this profile.`,
+      icon: "question",
+      showCancelButton: true,
+      confirmButtonColor: "#3085d6",
+      cancelButtonColor: "#d33",
+      confirmButtonText: `Yes, approve it!`,
     }).then(async (result) => {
-        if (result.isConfirmed) {
-            try {
-                await axios.patch(`${API_BASE_URL}/api/user/approve-profile/${userId}`, {}, {
-                    headers: {
-                        Authorization: `Bearer ${token}`
-                    }
-                });
-                setUsers(prevUsers =>
-                    prevUsers.map(user =>
-                        user._id === userId ? { ...user, isApproved: true } : user
-                    )
-                );
-                Swal.fire(`Approved!`, `Profile has been approved.`, "success");
-            } catch (error) {
-                console.error(`Error approving profile:`, error);
-                Swal.fire("Error!", "Something went wrong.", "error");
+      if (result.isConfirmed) {
+        try {
+          await axios.patch(`${API_BASE_URL}/api/user/approve-profile/${userId}`, {}, {
+            headers: {
+              Authorization: `Bearer ${token}`
             }
+          });
+          setUsers(prevUsers =>
+            prevUsers.map(user =>
+              user._id === userId ? { ...user, isApproved: true } : user
+            )
+          );
+          Swal.fire(`Approved!`, `Profile has been approved.`, "success");
+        } catch (error) {
+          console.error(`Error approving profile:`, error);
+          Swal.fire("Error!", "Something went wrong.", "error");
         }
+      }
     });
-};
+  };
 
   const handleSearchChange = (e) => {
     const { name, value } = e.target;
@@ -554,7 +557,7 @@ const ManageUser = () => {
           <div key={idx} className="h-20 rounded-xl bg-gray-100 dark:bg-gray-800" />
         ))}
       </div>
-      <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+      <div className="rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm p-4 shadow-sm dark:border-gray-800 dark:bg-slate-900">
         <div className="mb-3 h-9 rounded-lg bg-gray-100 dark:bg-gray-800" />
         <div className="h-10 rounded-lg bg-gray-100 dark:bg-gray-800" />
         <div className="mt-4 space-y-2">
@@ -593,11 +596,10 @@ const ManageUser = () => {
               <p className="text-2xl font-semibold text-gray-900 dark:text-white">{card.value}</p>
             </div>
             <div
-              className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold ${
-                card.label === "Total Users"
-                  ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-100"
-                  : card.badge
-              }`}
+              className={`inline-flex items-center rounded-full px-3 py-1 text-[11px] font-semibold ${card.label === "Total Users"
+                ? "bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-100"
+                : card.badge
+                }`}
             >
               Live
             </div>
@@ -605,7 +607,7 @@ const ManageUser = () => {
         ))}
       </div>
 
-      <div className="rounded-2xl border border-gray-200 bg-white shadow-sm dark:border-gray-800 dark:bg-slate-900">
+      <div className="rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm shadow-sm dark:border-gray-800 dark:bg-slate-900">
         <div className="flex flex-col gap-2 border-b border-gray-200 p-4 dark:border-gray-800">
           <div className="flex flex-wrap items-center gap-3">
             <h2 className="text-lg font-semibold text-gray-900 dark:text-white">All Users</h2>
@@ -641,11 +643,10 @@ const ManageUser = () => {
                     key={mode.key}
                     type="button"
                     onClick={() => setSearchCriteria((prev) => ({ ...prev, searchBy: mode.key }))}
-                    className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold transition ${
-                      searchCriteria.searchBy === mode.key
-                        ? "bg-white text-primary shadow-sm dark:bg-gray-800"
-                        : "text-gray-600 hover:text-primary dark:text-gray-200"
-                    }`}
+                    className={`flex items-center gap-1 rounded-md px-3 py-1.5 text-xs font-semibold transition ${searchCriteria.searchBy === mode.key
+                      ? "bg-[#f8f9fa] shadow-sm text-primary shadow-sm dark:bg-gray-800"
+                      : "text-gray-600 hover:text-primary dark:text-gray-200"
+                      }`}
                   >
                     {mode.icon}
                     {mode.label}
@@ -657,13 +658,12 @@ const ManageUser = () => {
                 <input
                   type="text"
                   name="searchTerm"
-                  placeholder={`Search by ${
-                    searchCriteria.searchBy === "name"
-                      ? "name"
-                      : searchCriteria.searchBy === "phone"
-                        ? "phone"
-                        : "profile ID"
-                  }`}
+                  placeholder={`Search by ${searchCriteria.searchBy === "name"
+                    ? "name"
+                    : searchCriteria.searchBy === "phone"
+                      ? "phone"
+                      : "profile ID"
+                    }`}
                   value={searchCriteria.searchTerm}
                   onChange={handleSearchChange}
                   className="h-full w-full rounded-md border px-3 py-1.5 pl-9 text-sm focus:outline-none focus:ring-2 focus:ring-primary dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
@@ -701,8 +701,18 @@ const ManageUser = () => {
                 <option value="active">Active</option>
                 <option value="blocked">Blocked</option>
               </select>
+              <select
+                name="gender"
+                value={searchCriteria.gender}
+                onChange={handleSearchChange}
+                className="h-10 min-w-[130px] rounded-lg border border-gray-200 bg-gradient-to-r from-white to-gray-50 px-4 text-sm font-semibold text-gray-700 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+              >
+                <option value="">All Genders</option>
+                <option value="male">Male</option>
+                <option value="female">Female</option>
+              </select>
               <div className="ml-auto flex flex-wrap items-center gap-2">
-                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-2 py-1 shadow-sm dark:border-gray-700 dark:bg-gray-800">
+                <div className="flex items-center gap-2 rounded-lg border border-gray-200 bg-[#f8f9fa] shadow-sm px-2 py-1 shadow-sm dark:border-gray-700 dark:bg-gray-800">
                   <select
                     value={bulkActionChoice}
                     onChange={(e) => setBulkActionChoice(e.target.value)}
@@ -726,7 +736,7 @@ const ManageUser = () => {
                 <button
                   type="button"
                   onClick={exportCsv}
-                  className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm transition hover:-translate-y-[1px] hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                  className="inline-flex items-center gap-1 rounded-md border border-gray-200 bg-[#f8f9fa] shadow-sm px-3 py-2 text-xs font-semibold text-gray-700 shadow-sm transition hover:-translate-y-[1px] hover:shadow-md dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
                   disabled={filteredUsers.length === 0}
                 >
                   <Download size={12} /> CSV
@@ -738,156 +748,156 @@ const ManageUser = () => {
 
         <div className="card-body p-0">
           <div className="relative h-auto w-full flex-shrink-0 overflow-auto rounded-none [scrollbar-width:_thin]">
-          <table className="table text-sm">
-            <thead className="table-header sticky top-0 z-10">
-              <tr className="table-row">
-                <th className="table-head text-xs w-8">
-                  <input
-                    type="checkbox"
-                    checked={selectedIds.size === paginatedUsers.length && paginatedUsers.length > 0}
-                    onChange={toggleSelectAll}
-                  />
-                </th>
-                <th className="table-head text-xs">#</th>
-                <th className="table-head text-xs">Profile ID</th>
-                <th className="table-head text-xs">Image</th>
-                <th className="table-head text-xs">Name</th>
-                <th className="table-head text-xs">Phone</th>
-                <th className="table-head text-xs">Premium</th>
-                <th className="table-head text-xs">Subscription</th>
-                <th className="table-head text-xs">Approval</th>
-                <th className="table-head text-xs">Status</th>
-                <th className="table-head text-xs">Actions</th>
-              </tr>
-            </thead>
-            <tbody className="table-body text-[13px]">
+            <table className="table text-sm">
+              <thead className="table-header sticky top-0 z-10">
+                <tr className="table-row">
+                  <th className="table-head text-xs w-8">
+                    <input
+                      type="checkbox"
+                      checked={selectedIds.size === paginatedUsers.length && paginatedUsers.length > 0}
+                      onChange={toggleSelectAll}
+                    />
+                  </th>
+                  <th className="table-head text-xs">#</th>
+                  <th className="table-head text-xs">Profile ID</th>
+                  <th className="table-head text-xs">Image</th>
+                  <th className="table-head text-xs">Name</th>
+                  <th className="table-head text-xs">Phone</th>
+                  <th className="table-head text-xs">Premium</th>
+                  <th className="table-head text-xs">Subscription</th>
+                  <th className="table-head text-xs">Approval</th>
+                  <th className="table-head text-xs">Status</th>
+                  <th className="table-head text-xs">Actions</th>
+                </tr>
+              </thead>
+              <tbody className="table-body text-[13px]">
                 {filteredUsers.length > 0 ? (
                   paginatedUsers.map((user, index) => (
                     <tr key={user._id} className="table-row">
-                    <td className="table-cell">
-                      <input
-                        type="checkbox"
-                        checked={selectedIds.has(user._id)}
-                        onChange={() => toggleSelect(user._id)}
-                      />
-                    </td>
-                    <td className="table-cell">{startIndex + index + 1}</td>
-                    <td className="table-cell font-semibold text-gray-800 dark:text-gray-100" title={buildProfileId(user)}>
-                      {buildProfileId(user)}
-                    </td>
-                    <td className="table-cell">
-                      <div className="flex h-12 w-12 overflow-hidden rounded-full border">
-                        <img
-                          src={user?.photos?.[0] ? `${user.photos[0]}` : getAvatar(index)}
-                          alt={user.fullName}
-                          className="size-full rounded-sm object-cover"
+                      <td className="table-cell">
+                        <input
+                          type="checkbox"
+                          checked={selectedIds.has(user._id)}
+                          onChange={() => toggleSelect(user._id)}
                         />
-                      </div>
-                    </td>
-                    <td className="table-cell font-medium text-gray-800 dark:text-gray-100">{user.fullName}</td>
-                    <td className="table-cell text-gray-700 dark:text-gray-200">{user.phoneNumber}</td>
-                    <td className="table-cell">
-                      {user.isPremium ? (
-                        <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-semibold text-purple-600">
-                          Premium
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-gray-200 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
-                          Free
-                        </span>
-                      )}
-                    </td>
-                    <td className="table-cell">
-                      <div className="flex flex-col gap-1">
-                        <div className="flex flex-wrap items-center gap-1.5">
-                          <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
-                            {getPlanLabel(user)}
-                          </span>
-                          <span
-                            className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${getSubscriptionStatus(user).tone}`}
-                          >
-                            {getSubscriptionStatus(user).label}
-                          </span>
+                      </td>
+                      <td className="table-cell">{startIndex + index + 1}</td>
+                      <td className="table-cell font-semibold text-gray-800 dark:text-gray-100" title={buildProfileId(user)}>
+                        {buildProfileId(user)}
+                      </td>
+                      <td className="table-cell">
+                        <div className="flex h-12 w-12 overflow-hidden rounded-full border">
+                          <img
+                            src={user?.image ? getImageUrl(user.image) : (user?.photos?.[0] ? getImageUrl(user.photos[0]) : getAvatar(index))}
+                            alt={user.fullName}
+                            className="size-full rounded-sm object-cover"
+                          />
                         </div>
-                        <span className="text-[11px] text-gray-500 dark:text-gray-400">
-                          Ends {formatDate(user.subscription?.endDate || user.premiumExpiresAt)}
-                        </span>
-                        {user.subscription?.pausedUntil && (
-                          <span className="text-[11px] text-amber-600">
-                            Paused till {formatDate(user.subscription.pausedUntil)}
+                      </td>
+                      <td className="table-cell font-medium text-gray-800 dark:text-gray-100">{user.fullName}</td>
+                      <td className="table-cell text-gray-700 dark:text-gray-200">{user.phoneNumber}</td>
+                      <td className="table-cell">
+                        {user.isPremium ? (
+                          <span className="rounded-full bg-purple-100 px-2 py-0.5 text-[11px] font-semibold text-purple-600">
+                            Premium
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-gray-200 px-2 py-0.5 text-[11px] font-semibold text-gray-600">
+                            Free
                           </span>
                         )}
-                        <button
-                          type="button"
-                          onClick={() => openSubscriptionDrawer(user)}
-                          className="mt-1 inline-flex w-fit items-center gap-1 rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 text-[11px] font-semibold text-indigo-700 shadow-sm transition hover:-translate-y-[1px] hover:shadow-md"
-                        >
-                          <Crown size={12} />
-                          Manage
-                        </button>
-                      </div>
-                    </td>
-                    <td className="table-cell">
-                      {user.isApproved ? (
-                        <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-600">
-                          Approved
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-[11px] font-semibold text-yellow-700">
-                          Not Approved
-                        </span>
-                      )}
-                    </td>
-                    <td className="table-cell">
-                      {user.isBlocked ? (
-                        <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-600">
-                          Blocked
-                        </span>
-                      ) : (
-                        <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-600">
-                          Active
-                        </span>
-                      )}
-                    </td>
-                    <td className="table-cell">
-                      <div className="flex items-center gap-x-3 text-[13px]">
-                        <Link to={`/edit-user/${user._id}`} className="text-blue-500 hover:text-blue-700" title="Edit">
-                            <FilePenLine size={18} />
-                        </Link>
-                        {user.isApproved !== true && (
-                            <button
-                                onClick={() => handleApprove(user._id)}
-                                className="text-green-500 hover:text-green-700"
-                                title="Approve"
+                      </td>
+                      <td className="table-cell">
+                        <div className="flex flex-col gap-1">
+                          <div className="flex flex-wrap items-center gap-1.5">
+                            <span className="rounded-full bg-indigo-50 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+                              {getPlanLabel(user)}
+                            </span>
+                            <span
+                              className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${getSubscriptionStatus(user).tone}`}
                             >
-                                <CheckCircle size={18} />
-                            </button>
+                              {getSubscriptionStatus(user).label}
+                            </span>
+                          </div>
+                          <span className="text-[11px] text-gray-500 dark:text-gray-400">
+                            Ends {formatDate(user.subscription?.endDate || user.premiumExpiresAt)}
+                          </span>
+                          {user.subscription?.pausedUntil && (
+                            <span className="text-[11px] text-amber-600">
+                              Paused till {formatDate(user.subscription.pausedUntil)}
+                            </span>
+                          )}
+                          <button
+                            type="button"
+                            onClick={() => openSubscriptionDrawer(user)}
+                            className="mt-1 inline-flex w-fit items-center gap-1 rounded-md border border-indigo-200 bg-indigo-50 px-2 py-1 text-[11px] font-semibold text-indigo-700 shadow-sm transition hover:-translate-y-[1px] hover:shadow-md"
+                          >
+                            <Crown size={12} />
+                            Manage
+                          </button>
+                        </div>
+                      </td>
+                      <td className="table-cell">
+                        {user.isApproved ? (
+                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-600">
+                            Approved
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-yellow-100 px-2 py-0.5 text-[11px] font-semibold text-yellow-700">
+                            Not Approved
+                          </span>
                         )}
-                        <button
-                          onClick={() => handleBlockToggle(user._id, user.isBlocked)}
-                          className="text-gray-600 hover:text-primary"
-                          title={user.isBlocked ? "Unblock User" : "Block User"}
-                        >
-                          {user.isBlocked ? <ShieldCheck size={18} /> : <ShieldOff size={18} />}
-                        </button>
-                        <button
-                          onClick={() => handleDelete(user._id)}
-                          className="text-red-500 hover:text-red-700"
-                          title="Delete User"
-                        >
-                          <Trash size={18} />
-                        </button>
-                      </div>
-                    </td>
+                      </td>
+                      <td className="table-cell">
+                        {user.isBlocked ? (
+                          <span className="rounded-full bg-red-100 px-2 py-0.5 text-[11px] font-semibold text-red-600">
+                            Blocked
+                          </span>
+                        ) : (
+                          <span className="rounded-full bg-green-100 px-2 py-0.5 text-[11px] font-semibold text-green-600">
+                            Active
+                          </span>
+                        )}
+                      </td>
+                      <td className="table-cell">
+                        <div className="flex items-center gap-x-3 text-[13px]">
+                          <Link to={`/edit-user/${user._id}`} className="text-blue-500 hover:text-blue-700" title="Edit">
+                            <FilePenLine size={18} />
+                          </Link>
+                          {user.isApproved !== true && (
+                            <button
+                              onClick={() => handleApprove(user._id)}
+                              className="text-green-500 hover:text-green-700"
+                              title="Approve"
+                            >
+                              <CheckCircle size={18} />
+                            </button>
+                          )}
+                          <button
+                            onClick={() => handleBlockToggle(user._id, user.isBlocked)}
+                            className="text-gray-600 hover:text-primary"
+                            title={user.isBlocked ? "Unblock User" : "Block User"}
+                          >
+                            {user.isBlocked ? <ShieldCheck size={18} /> : <ShieldOff size={18} />}
+                          </button>
+                          <button
+                            onClick={() => handleDelete(user._id)}
+                            className="text-red-500 hover:text-red-700"
+                            title="Delete User"
+                          >
+                            <Trash size={18} />
+                          </button>
+                        </div>
+                      </td>
+                    </tr>
+                  ))
+                ) : (
+                  <tr className="table-row">
+                    <td colSpan="12" className="table-cell text-center text-gray-500">No users found.</td>
                   </tr>
-                ))
-              ) : (
-                <tr className="table-row">
-                  <td colSpan="12" className="table-cell text-center text-gray-500">No users found.</td>
-                </tr>
-              )}
-            </tbody>
-          </table>
+                )}
+              </tbody>
+            </table>
           </div>
           <div className="flex flex-wrap items-center justify-between gap-3 p-4">
             <p className="text-sm text-gray-600 dark:text-gray-300">
@@ -895,25 +905,25 @@ const ManageUser = () => {
               {Math.min(startIndex + effectivePageSize, filteredUsers.length)} of {filteredUsers.length}
             </p>
             <div className="flex items-center gap-2">
-            <button
-              className="rounded-lg border px-3 py-1 text-sm hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700"
-              disabled={currentPage === 1}
-              onClick={() => setPage((p) => Math.max(1, p - 1))}
-              type="button"
-            >
-              Prev
-            </button>
-            <span className="text-sm text-gray-700 dark:text-gray-200">
-              Page {currentPage} / {totalPages}
-            </span>
-            <button
-              className="rounded-lg border px-3 py-1 text-sm hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700"
-              disabled={currentPage === totalPages}
-              onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
-              type="button"
-            >
-              Next
-            </button>
+              <button
+                className="rounded-lg border px-3 py-1 text-sm hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700"
+                disabled={currentPage === 1}
+                onClick={() => setPage((p) => Math.max(1, p - 1))}
+                type="button"
+              >
+                Prev
+              </button>
+              <span className="text-sm text-gray-700 dark:text-gray-200">
+                Page {currentPage} / {totalPages}
+              </span>
+              <button
+                className="rounded-lg border px-3 py-1 text-sm hover:border-primary hover:text-primary disabled:cursor-not-allowed disabled:opacity-50 dark:border-gray-700"
+                disabled={currentPage === totalPages}
+                onClick={() => setPage((p) => Math.min(totalPages, p + 1))}
+                type="button"
+              >
+                Next
+              </button>
             </div>
           </div>
         </div>
@@ -922,209 +932,208 @@ const ManageUser = () => {
       {subscriptionDrawerOpen && activeSubscriptionUser && (() => {
         const modal = (
           <div className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/70 p-4 backdrop-blur-md">
-            <div className="flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-white shadow-xl dark:border-gray-800 dark:bg-slate-900">
-            <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Subscription Manager
-                </p>
-                <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
-                  {activeSubscriptionUser.fullName}
-                </h3>
-                <p className="text-xs text-gray-500 dark:text-gray-400">
-                  Admin-only control. No payment required from the user.
-                </p>
-              </div>
-              <button
-                type="button"
-                onClick={closeSubscriptionDrawer}
-                className="rounded-full border border-gray-200 p-2 text-gray-500 transition hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300"
-              >
-                <X size={16} />
-              </button>
-            </div>
-
-            <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
-              <div className="grid gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-slate-800">
-                <div className="flex flex-wrap items-center gap-2">
-                  <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
-                    {getPlanLabel(activeSubscriptionUser)}
-                  </span>
-                  <span
-                    className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${getSubscriptionStatus(activeSubscriptionUser).tone}`}
-                  >
-                    {getSubscriptionStatus(activeSubscriptionUser).label}
-                  </span>
+            <div className="flex w-full max-w-2xl flex-col overflow-hidden rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm shadow-xl dark:border-gray-800 dark:bg-slate-900">
+              <div className="flex items-center justify-between border-b border-gray-200 px-5 py-4 dark:border-gray-800">
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    Subscription Manager
+                  </p>
+                  <h3 className="text-lg font-semibold text-gray-900 dark:text-white">
+                    {activeSubscriptionUser.fullName}
+                  </h3>
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
+                    Admin-only control. No payment required from the user.
+                  </p>
                 </div>
-                <div className="grid gap-3 text-xs text-gray-600 dark:text-gray-300 sm:grid-cols-3">
-                  <div className="flex items-center gap-2">
-                    <Calendar size={14} className="text-gray-500" />
-                    <span>
-                      Ends: {formatDate(activeSubscriptionUser.subscription?.endDate || activeSubscriptionUser.premiumExpiresAt)}
+                <button
+                  type="button"
+                  onClick={closeSubscriptionDrawer}
+                  className="rounded-full border border-gray-200 p-2 text-gray-500 transition hover:bg-gray-100 dark:border-gray-700 dark:text-gray-300"
+                >
+                  <X size={16} />
+                </button>
+              </div>
+
+              <div className="flex flex-col gap-4 overflow-y-auto px-5 py-4">
+                <div className="grid gap-3 rounded-2xl border border-gray-200 bg-gray-50 p-4 dark:border-gray-800 dark:bg-slate-800">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <span className="rounded-full bg-indigo-100 px-2 py-0.5 text-[11px] font-semibold text-indigo-700">
+                      {getPlanLabel(activeSubscriptionUser)}
+                    </span>
+                    <span
+                      className={`rounded-full px-2 py-0.5 text-[11px] font-semibold ${getSubscriptionStatus(activeSubscriptionUser).tone}`}
+                    >
+                      {getSubscriptionStatus(activeSubscriptionUser).label}
                     </span>
                   </div>
-                  <div className="flex items-center gap-2">
-                    <PauseCircle size={14} className="text-gray-500" />
-                    <span>Paused till: {formatDate(activeSubscriptionUser.subscription?.pausedUntil)}</span>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Ban size={14} className="text-gray-500" />
-                    <span>Cancel on: {formatDate(activeSubscriptionUser.subscription?.cancelAt)}</span>
+                  <div className="grid gap-3 text-xs text-gray-600 dark:text-gray-300 sm:grid-cols-3">
+                    <div className="flex items-center gap-2">
+                      <Calendar size={14} className="text-gray-500" />
+                      <span>
+                        Ends: {formatDate(activeSubscriptionUser.subscription?.endDate || activeSubscriptionUser.premiumExpiresAt)}
+                      </span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <PauseCircle size={14} className="text-gray-500" />
+                      <span>Paused till: {formatDate(activeSubscriptionUser.subscription?.pausedUntil)}</span>
+                    </div>
+                    <div className="flex items-center gap-2">
+                      <Ban size={14} className="text-gray-500" />
+                      <span>Cancel on: {formatDate(activeSubscriptionUser.subscription?.cancelAt)}</span>
+                    </div>
                   </div>
                 </div>
-              </div>
 
-              <div>
-                <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
-                  Admin Actions
-                </p>
-                <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
-                  {[
-                    { key: "assign", label: "Assign", icon: Crown, helper: "Grant a plan instantly" },
-                    { key: "upgrade", label: "Upgrade", icon: ArrowUpRight, helper: "Move to higher plan" },
-                    { key: "downgrade", label: "Downgrade", icon: ArrowDownRight, helper: "Move to lower plan" },
-                    { key: "pause", label: "Pause", icon: PauseCircle, helper: "Temporarily stop access" },
-                    { key: "extend", label: "Extend", icon: CalendarPlus, helper: "Add extra days" },
-                    { key: "cancel", label: "Cancel", icon: Ban, helper: "End subscription" },
-                  ].map((action) => {
-                    const Icon = action.icon;
-                    return (
-                      <button
-                        key={action.key}
-                        type="button"
-                        onClick={() => setSubscriptionForm((prev) => ({ ...prev, action: action.key }))}
-                        className={`rounded-xl border px-3 py-3 text-left text-sm font-semibold shadow-sm transition hover:-translate-y-[1px] hover:shadow-md ${
-                          subscriptionForm.action === action.key
+                <div>
+                  <p className="text-xs font-semibold uppercase tracking-wide text-gray-500 dark:text-gray-400">
+                    Admin Actions
+                  </p>
+                  <div className="mt-2 grid gap-2 sm:grid-cols-2 lg:grid-cols-3">
+                    {[
+                      { key: "assign", label: "Assign", icon: Crown, helper: "Grant a plan instantly" },
+                      { key: "upgrade", label: "Upgrade", icon: ArrowUpRight, helper: "Move to higher plan" },
+                      { key: "downgrade", label: "Downgrade", icon: ArrowDownRight, helper: "Move to lower plan" },
+                      { key: "pause", label: "Pause", icon: PauseCircle, helper: "Temporarily stop access" },
+                      { key: "extend", label: "Extend", icon: CalendarPlus, helper: "Add extra days" },
+                      { key: "cancel", label: "Cancel", icon: Ban, helper: "End subscription" },
+                    ].map((action) => {
+                      const Icon = action.icon;
+                      return (
+                        <button
+                          key={action.key}
+                          type="button"
+                          onClick={() => setSubscriptionForm((prev) => ({ ...prev, action: action.key }))}
+                          className={`rounded-xl border px-3 py-3 text-left text-sm font-semibold shadow-sm transition hover:-translate-y-[1px] hover:shadow-md ${subscriptionForm.action === action.key
                             ? "border-primary bg-primary/10 text-primary"
-                            : "border-gray-200 bg-white text-gray-700 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-200"
-                        }`}
-                      >
-                        <div className="flex items-center gap-2">
-                          <Icon size={16} />
-                          {action.label}
-                        </div>
-                        <p className="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">{action.helper}</p>
-                      </button>
-                    );
-                  })}
+                            : "border-gray-200 bg-[#f8f9fa] shadow-sm text-gray-700 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-200"
+                            }`}
+                        >
+                          <div className="flex items-center gap-2">
+                            <Icon size={16} />
+                            {action.label}
+                          </div>
+                          <p className="mt-1 text-xs font-normal text-gray-500 dark:text-gray-400">{action.helper}</p>
+                        </button>
+                      );
+                    })}
+                  </div>
                 </div>
-              </div>
 
-              <div className="rounded-2xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-800 dark:bg-slate-900">
-                <div className="grid gap-3 sm:grid-cols-2">
-                  {["assign", "upgrade", "downgrade"].includes(subscriptionForm.action) && (
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                      Plan
-                      <select
-                        value={subscriptionForm.planId}
-                        onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, planId: e.target.value }))}
-                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                      >
-                        <option value="">Select a plan</option>
-                        {plans.map((plan) => (
-                          <option key={plan._id} value={plan._id}>
-                            {plan.name} - {plan.durationInDays} days
-                          </option>
-                        ))}
-                      </select>
-                    </label>
-                  )}
+                <div className="rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm p-4 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+                  <div className="grid gap-3 sm:grid-cols-2">
+                    {["assign", "upgrade", "downgrade"].includes(subscriptionForm.action) && (
+                      <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                        Plan
+                        <select
+                          value={subscriptionForm.planId}
+                          onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, planId: e.target.value }))}
+                          className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        >
+                          <option value="">Select a plan</option>
+                          {plans.map((plan) => (
+                            <option key={plan._id} value={plan._id}>
+                              {plan.name} - {plan.durationInDays} days
+                            </option>
+                          ))}
+                        </select>
+                      </label>
+                    )}
 
-                  {subscriptionForm.action === "extend" && (
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                      Extend by
-                      <select
-                        value={subscriptionForm.extendDays}
-                        onChange={(e) =>
-                          setSubscriptionForm((prev) => ({ ...prev, extendDays: e.target.value }))
-                        }
-                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                      >
-                        <option value="7">7 days</option>
-                        <option value="30">30 days</option>
-                        <option value="90">90 days</option>
-                        <option value="custom">Custom</option>
-                      </select>
-                    </label>
-                  )}
+                    {subscriptionForm.action === "extend" && (
+                      <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                        Extend by
+                        <select
+                          value={subscriptionForm.extendDays}
+                          onChange={(e) =>
+                            setSubscriptionForm((prev) => ({ ...prev, extendDays: e.target.value }))
+                          }
+                          className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        >
+                          <option value="7">7 days</option>
+                          <option value="30">30 days</option>
+                          <option value="90">90 days</option>
+                          <option value="custom">Custom</option>
+                        </select>
+                      </label>
+                    )}
 
-                  {subscriptionForm.action === "pause" && (
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                      Pause for
-                      <select
-                        value={subscriptionForm.pauseDays}
-                        onChange={(e) =>
-                          setSubscriptionForm((prev) => ({ ...prev, pauseDays: e.target.value }))
-                        }
-                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                      >
-                        <option value="7">7 days</option>
-                        <option value="14">14 days</option>
-                        <option value="30">30 days</option>
-                        <option value="custom">Custom</option>
-                      </select>
-                    </label>
-                  )}
+                    {subscriptionForm.action === "pause" && (
+                      <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                        Pause for
+                        <select
+                          value={subscriptionForm.pauseDays}
+                          onChange={(e) =>
+                            setSubscriptionForm((prev) => ({ ...prev, pauseDays: e.target.value }))
+                          }
+                          className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        >
+                          <option value="7">7 days</option>
+                          <option value="14">14 days</option>
+                          <option value="30">30 days</option>
+                          <option value="custom">Custom</option>
+                        </select>
+                      </label>
+                    )}
 
-                  {subscriptionForm.action === "cancel" && (
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                      Cancellation mode
-                      <select
-                        value={subscriptionForm.cancelMode}
-                        onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, cancelMode: e.target.value }))}
-                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                      >
-                        <option value="immediate">Immediate</option>
-                        <option value="end_of_cycle">End of cycle</option>
-                      </select>
-                    </label>
-                  )}
+                    {subscriptionForm.action === "cancel" && (
+                      <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                        Cancellation mode
+                        <select
+                          value={subscriptionForm.cancelMode}
+                          onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, cancelMode: e.target.value }))}
+                          className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        >
+                          <option value="immediate">Immediate</option>
+                          <option value="end_of_cycle">End of cycle</option>
+                        </select>
+                      </label>
+                    )}
 
-                  {((subscriptionForm.action === "extend" && subscriptionForm.extendDays === "custom") ||
-                    (subscriptionForm.action === "pause" && subscriptionForm.pauseDays === "custom")) && (
-                    <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
-                      Custom days
-                      <input
-                        type="number"
-                        min="1"
-                        value={subscriptionForm.customDays}
-                        onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, customDays: e.target.value }))}
-                        className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                        placeholder="e.g. 21"
+                    {((subscriptionForm.action === "extend" && subscriptionForm.extendDays === "custom") ||
+                      (subscriptionForm.action === "pause" && subscriptionForm.pauseDays === "custom")) && (
+                        <label className="text-sm font-semibold text-gray-700 dark:text-gray-200">
+                          Custom days
+                          <input
+                            type="number"
+                            min="1"
+                            value={subscriptionForm.customDays}
+                            onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, customDays: e.target.value }))}
+                            className="mt-1 h-10 w-full rounded-lg border border-gray-200 bg-gray-50 px-3 text-sm font-semibold text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                            placeholder="e.g. 21"
+                          />
+                        </label>
+                      )}
+
+                    <label className="sm:col-span-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
+                      Internal note
+                      <textarea
+                        value={subscriptionForm.note}
+                        onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, note: e.target.value }))}
+                        className="mt-1 min-h-[80px] w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
+                        placeholder="Log why this change was made."
                       />
                     </label>
-                  )}
-
-                  <label className="sm:col-span-2 text-sm font-semibold text-gray-700 dark:text-gray-200">
-                    Internal note
-                    <textarea
-                      value={subscriptionForm.note}
-                      onChange={(e) => setSubscriptionForm((prev) => ({ ...prev, note: e.target.value }))}
-                      className="mt-1 min-h-[80px] w-full rounded-lg border border-gray-200 bg-gray-50 px-3 py-2 text-sm text-gray-700 focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/40 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-100"
-                      placeholder="Log why this change was made."
-                    />
-                  </label>
+                  </div>
                 </div>
               </div>
-            </div>
 
-            <div className="flex items-center justify-between border-t border-gray-200 px-5 py-4 dark:border-gray-800">
-              <button
-                type="button"
-                onClick={closeSubscriptionDrawer}
-                className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:border-primary hover:text-primary dark:border-gray-700 dark:text-gray-300"
-              >
-                Close
-              </button>
-              <button
-                type="button"
-                onClick={applySubscriptionAction}
-                className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-[1px] hover:shadow-md"
-              >
-                Apply Changes
-              </button>
+              <div className="flex items-center justify-between border-t border-gray-200 px-5 py-4 dark:border-gray-800">
+                <button
+                  type="button"
+                  onClick={closeSubscriptionDrawer}
+                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-semibold text-gray-600 hover:border-primary hover:text-primary dark:border-gray-700 dark:text-gray-300"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  onClick={applySubscriptionAction}
+                  className="rounded-lg bg-primary px-4 py-2 text-sm font-semibold text-white shadow-sm transition hover:-translate-y-[1px] hover:shadow-md"
+                >
+                  Apply Changes
+                </button>
+              </div>
             </div>
-          </div>
           </div>
         );
         if (!portalReady || typeof document === "undefined" || !document.body) {

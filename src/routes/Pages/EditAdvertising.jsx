@@ -145,7 +145,7 @@ const EditAdvertising = () => {
 
   return (
      <div
-      className="max-w-7xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow"
+      className="max-w-7xl mx-auto p-6 bg-[#f8f9fa] shadow-sm dark:bg-gray-800 rounded-lg shadow"
     >
       <h2 style={{ fontSize: "20px", fontWeight: 600, marginBottom: "16px" }}>
         Edit Advertising

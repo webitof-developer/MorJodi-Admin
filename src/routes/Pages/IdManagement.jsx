@@ -56,7 +56,7 @@ const IdManagement = () => {
   return (
     <div className="max-w-6xl mx-auto p-2">
     
-      <div className="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
+      <div className="bg-[#f8f9fa] shadow-sm dark:bg-gray-800 rounded-xl shadow-lg p-6 md:p-8">
       
            <form onSubmit={handleSubmit} className="mt-8 mt-2 space-y-4">
           <div>
@@ -91,16 +91,16 @@ const IdManagement = () => {
         </p>
 
         <div className="mt-6 flex flex-wrap items-center gap-2 bg-slate-100 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-lg px-4 py-3">
-          <span className="text-xs font-semibold text-slate-600 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2">
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-200 bg-[#f8f9fa] shadow-sm dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2">
             &lt;PREFIX&gt;
           </span>
-          <span className="text-xs font-semibold text-slate-600 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2">
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-200 bg-[#f8f9fa] shadow-sm dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2">
             &lt;INITIALS&gt;
           </span>
-          <span className="text-xs font-semibold text-slate-600 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2">
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-200 bg-[#f8f9fa] shadow-sm dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2">
             &lt;SEQ&gt;
           </span>
-          <span className="text-xs font-semibold text-slate-600 dark:text-slate-200 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2">
+          <span className="text-xs font-semibold text-slate-600 dark:text-slate-200 bg-[#f8f9fa] shadow-sm dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-md px-3 py-2">
             &lt;DOB&gt;
           </span>
         </div>

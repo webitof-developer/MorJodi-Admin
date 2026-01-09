@@ -27,7 +27,7 @@ const AddReligion = () => {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+    <div className="max-w-3xl mx-auto p-6 bg-[#f8f9fa] shadow-sm dark:bg-gray-800 rounded-lg shadow">
       <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">
         Add Religion
       </h2>

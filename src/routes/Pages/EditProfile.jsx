@@ -105,7 +105,7 @@ const token = localStorage.getItem("authToken");
   };
 
   return (
-    <div className="max-w-4xl mx-auto mt-6 p-6 bg-white dark:bg-gray-800 shadow-lg rounded-lg">
+    <div className="max-w-4xl mx-auto mt-6 p-6 bg-[#f8f9fa] shadow-sm dark:bg-gray-800 shadow-lg rounded-lg">
       <h2 className="text-2xl font-semibold text-gray-900 dark:text-white mb-4">
         Edit Profile
       </h2>

@@ -50,7 +50,7 @@ const AnalyticsDashboard = () => {
   const today = useMemo(() => new Date(), []);
   const initialStart = useMemo(() => {
     const prior = new Date();
-    prior.setDate(prior.getDate() - 30);
+    prior.setDate(prior.getDate() - 365);
     return prior;
   }, []);
 
@@ -259,7 +259,7 @@ const AnalyticsDashboard = () => {
           {
             label: "Revenue generated",
             value: currencyFormatter.format(totals.revenue || 0),
-            helper: `${formatNumber(totals.totalPlans || 0)} active plans`,
+            helper: `${formatNumber(analytics?.totalPremiumUsers ?? totals.totalPlans ?? 0)} active plans`,
             icon: IconChartBar,
             accent: "bg-amber-100/80 text-amber-700 dark:bg-amber-900/40 dark:text-amber-200",
           },

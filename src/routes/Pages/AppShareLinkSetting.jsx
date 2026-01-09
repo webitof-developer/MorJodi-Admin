@@ -49,7 +49,7 @@ const AppShareLinkSetting = () => {
   };
 
   return (
-    <div className="max-w-4xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-md shadow">
+    <div className="max-w-4xl mx-auto p-6 bg-[#f8f9fa] shadow-sm dark:bg-gray-800 rounded-md shadow">
       <h2 className="text-lg font-semibold dark:text-white">
         App Share Link Setting
       </h2>

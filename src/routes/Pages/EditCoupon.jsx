@@ -127,7 +127,7 @@ const EditCoupon = () => {
             <button
               type="button"
               onClick={() => navigate(-1)}
-              className="rounded-lg border border-gray-200 bg-white px-3 py-2 text-xs font-semibold text-gray-600 shadow-sm transition hover:-translate-y-[1px] hover:border-primary hover:text-primary hover:shadow-md dark:border-gray-700 dark:bg-slate-900 dark:text-gray-200"
+              className="rounded-lg border border-gray-200 bg-[#f8f9fa] shadow-sm px-3 py-2 text-xs font-semibold text-gray-600 shadow-sm transition hover:-translate-y-[1px] hover:border-primary hover:text-primary hover:shadow-md dark:border-gray-700 dark:bg-slate-900 dark:text-gray-200"
             >
               Cancel
             </button>
@@ -144,7 +144,7 @@ const EditCoupon = () => {
 
       <form id="coupon-form" onSubmit={handleSubmit} className="space-y-5">
         <div className="grid gap-5 lg:grid-cols-[1fr_1fr]">
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+          <div className="rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
             <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Basics</h3>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">
@@ -201,7 +201,7 @@ const EditCoupon = () => {
             </div>
           </div>
 
-          <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+          <div className="rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
             <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Rules</h3>
             <div className="mt-4 grid gap-3 sm:grid-cols-2">
               <label className="text-xs font-semibold text-gray-600 dark:text-gray-300">
@@ -265,7 +265,7 @@ const EditCoupon = () => {
           </div>
         </div>
 
-        <div className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
+        <div className="rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm p-5 shadow-sm dark:border-gray-800 dark:bg-slate-900">
           <div className="flex flex-wrap items-center justify-between gap-3">
             <div>
               <h3 className="text-sm font-semibold text-gray-800 dark:text-gray-200">Plan scope</h3>

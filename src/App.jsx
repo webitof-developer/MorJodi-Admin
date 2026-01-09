@@ -84,259 +84,271 @@ import IdManagement from "./routes/Pages/IdManagement";
 
 
 import DeletionRequests from "./routes/Pages/DeletionRequests";
+import ManageRequests from "./routes/Pages/ManageRequests";
 import AdminNotifications from "./routes/Pages/AdminNotifications";
 import DefaultUserSetting from "./routes/Pages/DefaultUserSetting";
 import DeletionRequestDetails from "./routes/Pages/DeletionRequestDetails";
 import ComplaintDetails from "./routes/Pages/ComplaintDetails";
 import ThemeSettings from "./routes/Pages/ThemeSettings";
+import GeneralSettings from "./routes/Pages/GeneralSettings";
+import VersionManagement from "./routes/Pages/VersionManagement";
+import UpdateAnalytics from "./routes/Pages/UpdateAnalytics";
+import ManageNotices from "./routes/Pages/ManageNotices";
+import AddNotice from "./routes/Pages/AddNotice";
+import NoticeAnalytics from "./routes/Pages/NoticeAnalytics";
 
 function App() {
     const router = createBrowserRouter([
         {
             path: "/",
-            element:  <Login />,
+            element: <Login />,
         },
         {
             path: "/forgot-password",
-            element:  <ForgotPassword />,
+            element: <ForgotPassword />,
         },
         {
             path: "/verify-otp",
             element: <VerifyOtp />,
         },
-   
 
-   
+
+
         {
             path: "/",
             element: <Layout />,
             children: [
                 {
-                   path:"/dashboard",
+                    path: "/dashboard",
                     index: true,
                     element: <Page />,
                 },
                 {
-                    path:"/editprofile/:id",
+                    path: "/editprofile/:id",
                     index: true,
                     element: <EditProfile />,
-                }, 
+                },
                 {
-                    path:"/edit-user/:id",
+                    path: "/edit-user/:id",
                     index: true,
                     element: <EditUser />,
-                }, 
+                },
                 {
-                    path:"/edit-religion/:id",
+                    path: "/edit-religion/:id",
                     index: true,
                     element: <EditReligion />,
-                }, 
+                },
                 {
-                    path:"/edit-caste/:id",
+                    path: "/edit-caste/:id",
                     index: true,
                     element: <EditCaste />,
-                }, 
+                },
                 {
-                    path:"/edit-subcaste/:id",
+                    path: "/edit-subcaste/:id",
                     index: true,
                     element: <EditSubCaste />,
-                }, 
+                },
                 {
-                    path:"/edit-location/:id",
+                    path: "/edit-location/:id",
                     index: true,
                     element: <EditLocation />,
-                }, 
+                },
                 {
-                    path:"/edit-profession/:id",
+                    path: "/edit-profession/:id",
                     index: true,
                     element: <EditProfession />,
-                }, 
+                },
                 {
-                    path:"/edit-mothertongue/:id",
+                    path: "/edit-mothertongue/:id",
                     index: true,
                     element: <EditMotherTongue />,
-                }, 
+                },
                 {
-                    path:"/edit-education/:id",
+                    path: "/edit-education/:id",
                     index: true,
                     element: <EditEducation />,
-                }, 
+                },
                 {
-                    path:"/edit-about/:id",
+                    path: "/edit-about/:id",
                     index: true,
                     element: <EditAbout />,
-                }, 
+                },
                 {
-                    path:"/edit-contact/:id",
+                    path: "/edit-contact/:id",
                     index: true,
                     element: <EditContact />,
-                }, 
+                },
                 {
-                    path:"/edit-termsprivacy/:id",
+                    path: "/edit-termsprivacy/:id",
                     index: true,
                     element: <EditTermsPrivacy />,
-                }, 
+                },
                 {
-                    path:"/edit-raasi/:id",
+                    path: "/edit-raasi/:id",
                     index: true,
                     element: <EditRaasi />,
-                }, 
-                
+                },
+
                 {
-                    path:"/users",
+                    path: "/users",
                     index: true,
                     element: <ManageUsers />,
-                }, 
+                },
                 {
-                    path:"/theme-settings",
+                    path: "/general-settings",
+                    index: true,
+                    element: <GeneralSettings />,
+                },
+                {
+                    path: "/theme-settings",
                     index: true,
                     element: <ThemeSettings />,
                 },
                 {
-                    path:"/premium-users",
+                    path: "/premium-users",
                     index: true,
                     element: <PremiumUsers />,
                 },
                 {
-                    path:"/expired-users",
+                    path: "/expired-users",
                     index: true,
                     element: <ExpiredUsers />,
                 },
-                    {
-                    path:"/religion",
+                {
+                    path: "/religion",
                     index: true,
                     element: <ManageReligion />,
-                }, 
-                     {
-                    path:"/addreligion",
+                },
+                {
+                    path: "/addreligion",
                     index: true,
                     element: <AddReligion />,
-                }, 
-                         {
-                    path:"/caste",
+                },
+                {
+                    path: "/caste",
                     index: true,
                     element: <ManageCaste />,
-                }, 
-                     {
-                    path:"/addcaste",
+                },
+                {
+                    path: "/addcaste",
                     index: true,
                     element: <AddCaste />,
-                }, 
-                             {
-                    path:"/caste",
+                },
+                {
+                    path: "/caste",
                     index: true,
                     element: <ManageCaste />,
-                }, 
-                     {
-                    path:"/addsubcaste",
+                },
+                {
+                    path: "/addsubcaste",
                     index: true,
                     element: <AddSubCaste />,
-                }, 
-                  {
-                    path:"/subcaste",
+                },
+                {
+                    path: "/subcaste",
                     index: true,
                     element: <ManageSubCaste />,
-                }, 
+                },
                 {
-                    path:"/addgotra",
+                    path: "/addgotra",
                     index: true,
                     element: <AddGotra />,
-                }, 
+                },
                 {
-                    path:"/edit-gotra/:id",
+                    path: "/edit-gotra/:id",
                     index: true,
                     element: <EditGotra />,
-                }, 
+                },
                 {
-                    path:"/gotra",
+                    path: "/gotra",
                     index: true,
                     element: <ManageGotra />,
-                }, 
-                        {
-                    path:"/addeducation",
+                },
+                {
+                    path: "/addeducation",
                     index: true,
                     element: <AddEducation />,
-                }, 
-                  {
-                    path:"/education",
+                },
+                {
+                    path: "/education",
                     index: true,
                     element: <ManageEducation />,
-                }, 
-                           {
-                    path:"/addmothertongue",
+                },
+                {
+                    path: "/addmothertongue",
                     index: true,
                     element: <AddMotherTongue />,
-                }, 
-                  {
-                    path:"/mothertongue",
+                },
+                {
+                    path: "/mothertongue",
                     index: true,
                     element: <ManageMotherTongue />,
-                }, 
-                           {
-                    path:"/addprofession",
+                },
+                {
+                    path: "/addprofession",
                     index: true,
                     element: <AddProfession />,
-                }, 
-                  {
-                    path:"/profession",
+                },
+                {
+                    path: "/profession",
                     index: true,
                     element: <ManageProfession />,
-                }, 
-                           {
-                    path:"/addlocation",
+                },
+                {
+                    path: "/addlocation",
                     index: true,
                     element: <AddLocation />,
-                }, 
-                  {
-                    path:"/location",
+                },
+                {
+                    path: "/location",
                     index: true,
-                    element: <ManageLocation/>,
-                }, 
-                                   {
-                    path:"/addraasi",
+                    element: <ManageLocation />,
+                },
+                {
+                    path: "/addraasi",
                     index: true,
                     element: <AddRaasi />,
-                }, 
-                  {
-                    path:"/raasi",
+                },
+                {
+                    path: "/raasi",
                     index: true,
-                    element: <ManageRaasi/>,
-                }, 
-                      {
-                    path:"/addprofile",
+                    element: <ManageRaasi />,
+                },
+                {
+                    path: "/addprofile",
                     index: true,
-                    element: <CreateProfile/>,
-                }, 
-                      {
-                    path:"/plans",
+                    element: <CreateProfile />,
+                },
+                {
+                    path: "/plans",
                     index: true,
                     element: <ManagePlans />,
-                }, 
-                      {
-                    path:"/coupons",
+                },
+                {
+                    path: "/coupons",
                     index: true,
                     element: <ManageCoupons />,
-                }, 
-                      {
-                    path:"/addplan",
+                },
+                {
+                    path: "/addplan",
                     index: true,
                     element: <AddPlan />,
-                },         {
-                    path:"/editplan/:id",
+                }, {
+                    path: "/editplan/:id",
                     index: true,
                     element: <EditPlan />,
-                }, 
-                      {
-                    path:"/add-coupon",
+                },
+                {
+                    path: "/add-coupon",
                     index: true,
                     element: <AddCoupon />,
-                }, 
-                      {
-                    path:"/edit-coupon/:id",
+                },
+                {
+                    path: "/edit-coupon/:id",
                     index: true,
                     element: <EditCoupon />,
-                }, 
-                 {
+                },
+                {
                     path: "/addbanner",
                     index: true,
                     element: <AddBanner />,
@@ -352,7 +364,7 @@ function App() {
                     index: true,
                     element: <ManageBanner />,
                 },
-                 {
+                {
                     path: "/terms-privacy",
                     index: true,
                     element: <ManageTermsPrivacy />,
@@ -367,7 +379,7 @@ function App() {
                     index: true,
                     element: <EditTermsPrivacy />,
                 },
-                  {
+                {
                     path: "/about",
                     index: true,
                     element: <ManageAbout />,
@@ -432,6 +444,38 @@ function App() {
                     index: true,
                     element: <DefaultUserSetting />,
                 },
+                // App Version Routes
+                {
+                    path: "/version-management",
+                    index: true,
+                    element: <VersionManagement />,
+                },
+                {
+                    path: "/update-analytics",
+                    index: true,
+                    element: <UpdateAnalytics />,
+                },
+                {
+                    path: "/notices/list",
+                    index: true,
+                    element: <ManageNotices />,
+                },
+                {
+                    path: "/add-notice",
+                    index: true,
+                    element: <AddNotice />,
+                },
+                {
+                    path: "/edit-notice/:id",
+                    index: true,
+                    element: <AddNotice />,
+                },
+                {
+                    path: "/notice-analytics/:id",
+                    index: true,
+                    element: <NoticeAnalytics />,
+                },
+
                 // Advertising Routes
                 {
                     path: "/manage-advertising",
@@ -460,6 +504,11 @@ function App() {
                     element: <EditComplaint />,
                 },
                 {
+                    path: "/data-requests",
+                    index: true,
+                    element: <ManageRequests />,
+                },
+                {
                     path: "/deletion-requests",
                     index: true,
                     element: <DeletionRequests />,
@@ -477,12 +526,12 @@ function App() {
                 {
                     path: "/complaint-details/:id",
                     index: true,
-                    element: <ComplaintDetails/>,
+                    element: <ComplaintDetails />,
                 },
                 {
                     path: "/deletion-request-details/:id",
                     index: true,
-                    element: <DeletionRequestDetails/>,
+                    element: <DeletionRequestDetails />,
                 },
 
             ],

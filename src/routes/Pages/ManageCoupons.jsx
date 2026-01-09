@@ -88,7 +88,7 @@ const ManageCoupons = () => {
       <div className="rounded-2xl border border-gray-200 bg-gradient-to-r from-rose-50 via-white to-white p-6 shadow-sm dark:border-gray-800 dark:from-rose-900/30 dark:via-slate-900 dark:to-slate-900">
         <div className="flex flex-wrap items-center gap-4">
           <div className="flex items-center gap-3">
-            <div className="rounded-xl bg-white/90 p-2 text-rose-600 shadow-sm dark:bg-slate-800">
+            <div className="rounded-xl bg-[#f8f9fa] shadow-sm/90 p-2 text-rose-600 shadow-sm dark:bg-slate-800">
               <Tag size={22} />
             </div>
             <div>
@@ -107,7 +107,7 @@ const ManageCoupons = () => {
                 placeholder="Search coupon"
                 value={searchTerm}
                 onChange={(e) => setSearchTerm(e.target.value)}
-                className="h-10 w-64 rounded-lg border border-gray-200 bg-white pl-10 pr-3 text-sm font-medium text-gray-700 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-100"
+                className="h-10 w-64 rounded-lg border border-gray-200 bg-[#f8f9fa] shadow-sm pl-10 pr-3 text-sm font-medium text-gray-700 shadow-sm focus:border-primary focus:outline-none focus:ring-2 focus:ring-primary/30 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-100"
               />
             </div>
             <Link to="/add-coupon" className="btn-primary flex items-center gap-2">
@@ -122,7 +122,7 @@ const ManageCoupons = () => {
           filteredCoupons.map((coupon) => (
             <div
               key={coupon._id}
-              className="rounded-2xl border border-gray-200 bg-white p-5 shadow-sm transition hover:-translate-y-[1px] hover:shadow-md dark:border-gray-800 dark:bg-slate-900"
+              className="rounded-2xl border border-gray-200 bg-[#f8f9fa] shadow-sm p-5 shadow-sm transition hover:-translate-y-[1px] hover:shadow-md dark:border-gray-800 dark:bg-slate-900"
             >
               <div className="flex flex-wrap items-start justify-between gap-3">
                 <div>
@@ -197,7 +197,7 @@ const ManageCoupons = () => {
             </div>
           ))
         ) : (
-          <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-10 text-center text-gray-500 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-300">
+          <div className="rounded-2xl border border-dashed border-gray-300 bg-[#f8f9fa] shadow-sm p-10 text-center text-gray-500 dark:border-gray-700 dark:bg-slate-900 dark:text-gray-300">
             No coupons found.
           </div>
         )}

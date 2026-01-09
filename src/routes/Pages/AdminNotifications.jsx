@@ -56,7 +56,7 @@ const AdminNotifications = () => {
     <div className="card">
       <h1 className="text-2xl font-bold mb-4">Notifications</h1>
 
-      <div className="bg-white dark:bg-slate-900 p-6 rounded-lg ">
+      <div className="bg-[#f8f9fa] shadow-sm dark:bg-slate-900 p-6 rounded-lg ">
         {notifications.length > 0 ? (
           notifications.map((notification) => (
             <div

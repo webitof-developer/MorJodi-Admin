@@ -90,7 +90,7 @@ const AddBanner = () => {
   };
 
   return (
-    <div className="max-w-6xl mx-auto p-6 bg-white dark:bg-gray-800 rounded-lg shadow">
+    <div className="max-w-6xl mx-auto p-6 bg-[#f8f9fa] shadow-sm dark:bg-gray-800 rounded-lg shadow">
          <h2 className="text-xl font-semibold text-gray-900 dark:text-white mb-4">Add Banner</h2>
       <form onSubmit={handleSubmit} encType="multipart/form-data" className="space-y-4">
         <div  className="grid grid-cols-2 gap-4">

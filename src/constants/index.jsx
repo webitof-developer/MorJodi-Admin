@@ -1,5 +1,4 @@
 // admin-panel/src/constants/navbarLinks.js
-// Make sure you have @tabler/icons-react installed: npm install @tabler/icons-react
 import {
   IconDashboard,
   IconUser,
@@ -21,11 +20,17 @@ import {
   IconClockHour5,
   IconCrown,
   IconPalette,
-  IconTag
+  IconTag,
+  IconDeviceMobile,
+  IconChartBar,
+  IconBell
 } from "@tabler/icons-react";
 import { FaGift } from "react-icons/fa";
+
 export const navbarLinks = {
   Admin: [
+
+  
     {
       label: "Dashboard",
       icon: IconDashboard,
@@ -36,7 +41,6 @@ export const navbarLinks = {
       icon: IconUser,
       path: "/users",
     },
-
     {
       label: "Premium Users",
       icon: IconCrown,
@@ -51,6 +55,16 @@ export const navbarLinks = {
       label: "Deletion Requests",
       icon: IconUser,
       path: "/deletion-requests",
+    },
+    {
+      label: "Data Requests",
+      icon: IconFileDescription, // Using a generic icon, can be updated
+      path: "/data-requests",
+    },
+  {
+      label: "Manage Notices",
+      icon: IconInfoCircle,
+      path: "/notices/list",
     },
     {
       label: "Masters",
@@ -73,7 +87,7 @@ export const navbarLinks = {
         },
         {
           label: "Gotra",
-          icon: IconZodiacLeo, // Using a placeholder icon, can be changed later
+          icon: IconZodiacLeo,
           path: "/gotra",
         },
         {
@@ -103,12 +117,33 @@ export const navbarLinks = {
         },
       ],
     },
-
+    {
+      label: "App Updates",
+      icon: IconDeviceMobile,
+      path: "/app-updates",
+      subMenu: [
+        {
+          label: "Version Management",
+          icon: IconDeviceMobile,
+          path: "/version-management",
+        },
+        {
+          label: "Update Analytics",
+          icon: IconChartBar,
+          path: "/update-analytics",
+        },
+      ]
+    },
     {
       label: "Settings",
       icon: IconSettings,
       path: "/settings",
       subMenu: [
+        {
+          label: "General Settings",
+          icon: IconSettings,
+          path: "/general-settings",
+        },
         {
           label: "Theme Settings",
           icon: IconPalette,
@@ -134,7 +169,6 @@ export const navbarLinks = {
           icon: IconUsers,
           path: "/defaultusersetting",
         },
-
         {
           label: "Manage Banners",
           icon: IconPhoto,

@@ -67,7 +67,7 @@ const DefaultUserSetting = () => {
 
       <form
         onSubmit={handleSubmit}
-        className="bg-white dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4"
+        className="bg-[#f8f9fa] shadow-sm dark:bg-gray-800 p-6 rounded-lg shadow-md space-y-4"
       >
         <h1 className="text-lg font-semibold dark:text-white">Default User Settings</h1>
         {Object.keys(settings).map((key) => (
