@@ -59,10 +59,10 @@ const Login = () => {
       <div className="pointer-events-none absolute -right-16 bottom-0 h-64 w-64 rounded-full bg-primary-light opacity-30 blur-3xl animate-float-fast" />
 
       <div className="relative mx-auto w-full max-w-5xl">
-        <div className="grid w-full overflow-hidden rounded-3xl border border-white/10 bg-[#f8f9fa] shadow-sm/10 shadow-2xl backdrop-blur-2xl md:grid-cols-2 animate-rise">
+        <div className="grid w-full overflow-hidden rounded-3xl border border-white/10 bg-white/10 shadow-2xl backdrop-blur-2xl md:grid-cols-2 animate-rise">
           <div className="hidden flex-col justify-between bg-gradient-to-br from-primary to-primary-light p-10 text-white md:flex">
             <div className="flex items-center gap-3">
-              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/30 bg-[#f8f9fa] shadow-sm/15 animate-pop">
+              <div className="flex h-14 w-14 items-center justify-center overflow-hidden rounded-2xl border border-white/30 bg-white/15 animate-pop">
                 <img src="/FavIcon.png" alt="Mor Jodi logo" className="h-full w-full object-contain" />
               </div>
               <div>
@@ -80,18 +80,18 @@ const Login = () => {
             </div>
 
             <div className="mt-8 grid grid-cols-2 gap-3 text-sm text-white/80">
-              <div className="rounded-2xl border border-white/20 bg-[#f8f9fa] shadow-sm/10 p-4">
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
                 <p className="text-xs uppercase tracking-wide text-white/60">Reliability</p>
                 <p className="mt-2 font-semibold">99.9% uptime</p>
               </div>
-              <div className="rounded-2xl border border-white/20 bg-[#f8f9fa] shadow-sm/10 p-4">
+              <div className="rounded-2xl border border-white/20 bg-white/10 p-4">
                 <p className="text-xs uppercase tracking-wide text-white/60">Support</p>
                 <p className="mt-2 font-semibold">24/7 priority</p>
               </div>
             </div>
           </div>
 
-          <div className="bg-[#f8f9fa] shadow-sm/90 p-8 backdrop-blur-xl sm:p-10">
+          <div className="bg-white/90 p-8 backdrop-blur-xl sm:p-10">
             <div className="mb-8 space-y-2 animate-fade-delay">
               <p className="text-xs font-semibold uppercase tracking-[0.2em] text-primary">
                 Admin Access
@@ -113,7 +113,7 @@ const Login = () => {
                 <input
                   type="text"
                   id="identifier"
-                  className="w-full rounded-xl border border-slate-200 bg-[#f8f9fa] shadow-sm/80 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
+                  className="w-full rounded-xl border border-slate-200 bg-white/80 px-4 py-3 text-sm text-slate-900 shadow-sm outline-none transition focus:border-primary focus:ring-2 focus:ring-primary/20 disabled:opacity-60"
                   placeholder="you@example.com or +91 98765 43210"
                   value={identifier}
                   onChange={(e) => setIdentifier(e.target.value)}

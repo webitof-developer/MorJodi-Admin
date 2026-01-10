@@ -90,7 +90,7 @@ const getInitialMultiSelectValue = (field, user, isUserEducation = false) => {
 // --- Sub-components for specific UI elements ---
 
 const SectionCard = ({ title, subTitle, children, className = "" }) => (
-  <div className={`bg-[#f8f9fa] shadow-sm rounded-2xl shadow-sm p-6 mb-6 ${className}`}>
+  <div className={`bg-white shadow-sm rounded-2xl shadow-sm p-6 mb-6 ${className}`}>
     {(title || subTitle) && (
       <div className="mb-4">
         {title && <h3 className="text-base font-bold text-gray-900 flex items-center gap-1">{title}</h3>}
@@ -570,7 +570,7 @@ const EditUser = () => {
     <div className="bg-[#f8f9fa] min-h-screen p-6 font-sans text-slate-800">
 
       {/* --- TOP HEADER --- */}
-      <div className="mb-6 pb-6 relative overflow-visible flex flex-col">
+      <div className="bg-white shadow-sm rounded-[20px] mb-6 pb-6 relative overflow-visible flex flex-col">
         <div className="h-32 relative rounded-t-[20px] overflow-hidden group isolate transform-gpu shrink-0">
           {/* Background Image or Gradient */}
           {galleryItems[0]?.preview ? (
