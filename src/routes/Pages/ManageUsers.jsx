@@ -46,6 +46,7 @@ const ManageUser = () => {
   const [subscriptionDrawerOpen, setSubscriptionDrawerOpen] = useState(false);
   const [activeSubscriptionUser, setActiveSubscriptionUser] = useState(null);
   const [portalReady, setPortalReady] = useState(false);
+  const [previewImage, setPreviewImage] = useState(null);
   const [subscriptionForm, setSubscriptionForm] = useState({
     action: "assign",
     planId: "",
@@ -773,7 +774,19 @@ const ManageUser = () => {
               <tbody className="table-body text-[13px]">
                 {filteredUsers.length > 0 ? (
                   paginatedUsers.map((user, index) => (
-                    <tr key={user._id} className="table-row">
+                    <tr
+                      key={user._id}
+                      className="table-row cursor-pointer hover:bg-gray-50 dark:hover:bg-slate-800"
+                      onClick={(e) => {
+                        // Prevent navigation if clicking on a button, link, or input
+                        if (
+                          e.target.closest('button') ||
+                          e.target.closest('a') ||
+                          e.target.closest('input')
+                        ) return;
+                        window.location.href = `/edit-user/${user._id}`;
+                      }}
+                    >
                       <td className="table-cell">
                         <input
                           type="checkbox"
@@ -786,7 +799,13 @@ const ManageUser = () => {
                         {buildProfileId(user)}
                       </td>
                       <td className="table-cell">
-                        <div className="flex h-12 w-12 overflow-hidden rounded-full border">
+                        <div
+                          className="flex h-12 w-12 overflow-hidden rounded-full border cursor-pointer hover:border-primary transition"
+                          onClick={(e) => {
+                            e.stopPropagation(); // Stop row click
+                            setPreviewImage(user?.image ? getImageUrl(user.image) : (user?.photos?.[0] ? getImageUrl(user.photos[0]) : getAvatar(index)));
+                          }}
+                        >
                           <img
                             src={user?.image ? getImageUrl(user.image) : (user?.photos?.[0] ? getImageUrl(user.photos[0]) : getAvatar(index))}
                             alt={user.fullName}
@@ -1141,6 +1160,29 @@ const ManageUser = () => {
         }
         return createPortal(modal, document.body);
       })()}
+
+      {/* Image Preview Modal */}
+      {previewImage && (
+        <div
+          className="fixed inset-0 z-[10000] flex items-center justify-center bg-black/90 p-4 transition-all duration-300"
+          onClick={() => setPreviewImage(null)}
+        >
+          <div className="relative max-h-[90vh] max-w-[90vw] overflow-hidden rounded-lg shadow-2xl animate-in zoom-in-95 duration-200">
+            <button
+              onClick={() => setPreviewImage(null)}
+              className="absolute top-2 right-2 z-10 rounded-full bg-black/50 p-2 text-white hover:bg-black/70 transition"
+            >
+              <X size={20} />
+            </button>
+            <img
+              src={previewImage}
+              alt="Preview"
+              className="h-full w-full object-contain"
+              onClick={(e) => e.stopPropagation()} // Prevent closing when clicking image
+            />
+          </div>
+        </div>
+      )}
     </div>
   );
 };

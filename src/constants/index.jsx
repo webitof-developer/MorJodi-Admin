@@ -30,7 +30,7 @@ import { FaGift } from "react-icons/fa";
 export const navbarLinks = {
   Admin: [
 
-  
+
     {
       label: "Dashboard",
       icon: IconDashboard,
@@ -61,7 +61,7 @@ export const navbarLinks = {
       icon: IconFileDescription, // Using a generic icon, can be updated
       path: "/data-requests",
     },
-  {
+    {
       label: "Manage Notices",
       icon: IconInfoCircle,
       path: "/notices/list",
@@ -135,6 +135,22 @@ export const navbarLinks = {
       ]
     },
     {
+      label: "Manage Complaints",
+      icon: IconFileDescription,
+      path: "/manage-complaints",
+    },
+    {
+      label: "Manage Banners",
+      icon: IconPhoto,
+      path: "/managebanner",
+    },
+    {
+      label: "Manage Advertising",
+      icon: IconPhoto,
+      path: "/manage-advertising",
+    },
+
+    {
       label: "Settings",
       icon: IconSettings,
       path: "/settings",
@@ -169,16 +185,7 @@ export const navbarLinks = {
           icon: IconUsers,
           path: "/defaultusersetting",
         },
-        {
-          label: "Manage Banners",
-          icon: IconPhoto,
-          path: "/managebanner",
-        },
-        {
-          label: "Manage Advertising",
-          icon: IconPhoto,
-          path: "/manage-advertising",
-        },
+
         {
           label: "About MorJodi",
           icon: IconInfoCircle,
@@ -199,11 +206,7 @@ export const navbarLinks = {
           icon: IconUsers,
           path: "/follow",
         },
-        {
-          label: "Manage Complaints",
-          icon: IconFileDescription,
-          path: "/manage-complaints",
-        },
+
         {
           label: "App Share Link Setting",
           icon: IconSettings,

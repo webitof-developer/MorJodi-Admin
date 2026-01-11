@@ -248,12 +248,19 @@ const EditUser = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const [userRes, metaRes] = await Promise.all([
+        const [userRes, metaRes, subRes] = await Promise.all([
           axios.get(`${USER_API_URL}/${id}`, { headers: { Authorization: `Bearer ${token}` } }),
-          axios.get(`${META_API_BASE_URL}/profile-meta`)
+          axios.get(`${META_API_BASE_URL}/profile-meta`),
+          axios.get(`${API_BASE_URL}/api/admin-subscriptions/${id}`, { headers: { Authorization: `Bearer ${token}` } }).catch(() => ({ data: { subscription: null } }))
         ]);
 
         const user = userRes.data.user;
+        // Merge subscription details into user object for display simplification or keep separate
+        // For now, let's attach it to user.subscription so existing UI logic works
+        if (subRes.data.subscription) {
+          user.subscription = subRes.data.subscription;
+        }
+
         setFullUser(user);
         setAllMetaData(metaRes.data);
         setDisplayId(user?.profileId || user?.profileCode || user?._id || 'N/A');
@@ -279,13 +286,11 @@ const EditUser = () => {
         setGalleryItems(newGallery);
 
         // ... (rest of loading logic: aadhar, pan, formData) ...
-        const aadharArr = Array.isArray(user?.aadharImage) ? user.aadharImage : (user?.aadharImage ? [user.aadharImage] : []);
-        setAadharImage(getImageUrl(aadharArr[0]));
-        setAadharBackImage(getImageUrl(aadharArr[1]));
+        setAadharImage(getImageUrl(user?.aadharFront));
+        setAadharBackImage(getImageUrl(user?.aadharBack));
 
-        const panArr = Array.isArray(user?.pancardImage) ? user.pancardImage : (user?.pancardImage ? [user.pancardImage] : []);
-        setPanCardImage(getImageUrl(panArr[0]));
-        setPanCardBackImage(getImageUrl(panArr[1]));
+        setPanCardImage(getImageUrl(user?.panFront));
+        setPanCardBackImage(getImageUrl(user?.panBack));
 
         setFormData({
           fullName: user?.fullName || '',
@@ -352,9 +357,84 @@ const EditUser = () => {
     fetchData();
   }, [id, token]);
 
-  // ... (subscription logic) ...
+  // --- Subscription Helpers ---
+  const formatDate = (dateString) => {
+    if (!dateString) return 'N/A';
+    return new Date(dateString).toLocaleDateString('en-GB', {
+      day: '2-digit', month: 'short', year: 'numeric'
+    });
+  };
 
-  // ... (helper functions) ...
+  const getPlanLabel = (user) => {
+    if (!user?.isPremium) return "Free Plan";
+    const planName = plans.find(p => p._id === user.planId)?.name;
+    return planName || "Premium";
+  };
+
+  const getSubscriptionStatus = (user) => {
+    if (!user) return { label: 'Unknown', tone: 'bg-gray-100 text-gray-700' };
+    if (user.isBlocked) return { label: 'Blocked', tone: 'bg-red-100 text-red-700' };
+
+    const isPaused = user.subscription?.pausedUntil && new Date(user.subscription.pausedUntil) > new Date();
+    if (isPaused) return { label: 'Paused', tone: 'bg-yellow-100 text-yellow-700' };
+
+    if (user.isPremium) return { label: 'Active', tone: 'bg-green-100 text-green-700' };
+    return { label: 'Free', tone: 'bg-gray-100 text-gray-600' };
+  };
+
+  // --- Subscription Logic ---
+  const openSubscriptionDrawer = async (user) => {
+    setActiveSubscriptionUser(user);
+    setSubscriptionForm({
+      action: "assign", planId: "", extendDays: "30", pauseDays: "7",
+      cancelMode: "immediate", customDays: "", note: "",
+    });
+    setSubscriptionDrawerOpen(true);
+    setPortalReady(true);
+
+    if (plans.length === 0) {
+      try {
+        const res = await axios.get(`${API_BASE_URL}/api/plans`, { headers: { Authorization: `Bearer ${token}` } });
+        // Depending on API response structure, adjust if needed. Typically it's res.data for array.
+        setPlans(Array.isArray(res.data) ? res.data : (res.data.plans || []));
+      } catch (err) {
+        console.error("Failed to fetch plans", err);
+      }
+    }
+  };
+
+  const closeSubscriptionDrawer = () => {
+    setSubscriptionDrawerOpen(false);
+    setActiveSubscriptionUser(null);
+  };
+
+  const applySubscriptionAction = async () => {
+    if (!activeSubscriptionUser) return;
+    try {
+      const payload = {
+        action: subscriptionForm.action,
+        planId: subscriptionForm.planId,
+        days: subscriptionForm.action === 'extend' ? (subscriptionForm.extendDays === 'custom' ? parseInt(subscriptionForm.customDays) : parseInt(subscriptionForm.extendDays)) :
+          subscriptionForm.action === 'pause' ? (subscriptionForm.pauseDays === 'custom' ? parseInt(subscriptionForm.customDays) : parseInt(subscriptionForm.pauseDays)) : undefined,
+        cancelMode: subscriptionForm.cancelMode,
+        note: subscriptionForm.note
+      };
+
+      await axios.post(`${API_BASE_URL}/api/admin-subscriptions/${activeSubscriptionUser._id}`, payload, {
+        headers: { Authorization: `Bearer ${token}` }
+      });
+
+      Swal.fire("Success", "Subscription updated", "success");
+      closeSubscriptionDrawer();
+
+      // Refresh User Data to reflect changes
+      const userRes = await axios.get(`${USER_API_URL}/${id}`, { headers: { Authorization: `Bearer ${token}` } });
+      setFullUser(userRes.data.user);
+    } catch (err) {
+      console.error('Subscription Update Error:', err);
+      Swal.fire("Error", err.response?.data?.message || "Failed to update subscription", "error");
+    }
+  };
 
   const pickImage = async (setImageUri, setImageFile, isGallery = false) => {
     try {
